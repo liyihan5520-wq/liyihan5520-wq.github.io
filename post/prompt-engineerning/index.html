@@ -1,0 +1,229 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prompt Engineerning | YH&#39;s Blog</title>
+<link rel="shortcut icon" href="https://liyihan5520-wq.github.io//favicon.ico?v=1764167206896">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://liyihan5520-wq.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Prompt Engineerning | YH&#39;s Blog - Atom Feed" href="https://liyihan5520-wq.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="定义 Agent 功能的 System Prompt，用于设定 llm 整体行为，帮助模型了解用户需求，对于 Agent 能力表现至关重要，在此系统学习一下 Prompt Engineerning 相关技术
+1. chain of thou..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://liyihan5520-wq.github.io/">
+  <img class="avatar" src="https://liyihan5520-wq.github.io//images/avatar.png?v=1764167206896" alt="">
+  </a>
+  <h1 class="site-title">
+    YH&#39;s Blog
+  </h1>
+  <p class="site-description">
+    A junior programmer, focusing on Agent and LLM.     Keep learning and sharing knowledge of  AI
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Prompt Engineerning
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-11-24
+              </span>
+              <span>
+                5 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>定义 Agent 功能的 System Prompt，用于设定 llm 整体行为，帮助模型了解用户需求，对于 Agent 能力表现至关重要，在此系统学习一下 Prompt Engineerning 相关技术</p>
+<h1 id="1-chain-of-thoughts">1. chain of thoughts</h1>
+<blockquote>
+<p>鼓励大模型解释其推理过程，把一个多步推理问题分解成很多中间步骤，分配给更多计算量，生成更多的token，在将答案拼接在一起求解</p>
+</blockquote>
+<ul>
+<li>zero-shot-CoT:     通常在问题结尾附加 &quot;Let's think step by step&quot;</li>
+<li>self-consistency:   生成多个思路链，然后取多数答案作为最终答案</li>
+<li>knowledge-generation prompt:  先引导模型生成问题相关知识，再将知识拼接到 prompt 中</li>
+<li>prompt chaining:  将问题分解为多个子问题，根据子任务创建一系列提示操作</li>
+<li>ToT:  思维树，能够自己对严谨推理过程的中间思维进行评估</li>
+</ul>
+<blockquote>
+<p>假设三位不同的专家来回答这个问题。所有专家都写下他们思考这个问题的第一个步骤，然后与大家分享。<br>
+然后，所有专家都写下他们思考的下一个步骤并分享。以此类推，直到所有专家写完他们思考的所有步骤。.只要大家发现有专家的步骤出错了，就让这位专家离开。<br>
+请问...</p>
+</blockquote>
+<h1 id="2-self-refine">2. Self-Refine</h1>
+<blockquote>
+<p>考虑到LLM 第一次生成结果可能不是最好的输出，提出一种包括反馈(feedback) 和 改善(refinement)两个步骤的迭代方案，来改进LLM的初始输出</p>
+</blockquote>
+<h1 id="3-reflection">3. Reflection</h1>
+<blockquote>
+<p>引入反思机制，有助于帮助智能体快速从之前的错误中学习</p>
+</blockquote>
+<ul>
+<li>参与者（Actor）：根据状态观测量生成文本和动作。参与者在环境中采取行动并接受观察结果，从而形成轨迹。</li>
+<li>评估者（Evaluator）：对参与者的输出进行评价。具体来说，它将生成的轨迹（也被称作短期记忆）作为输入并输出奖励分数。</li>
+<li>自我反思（Self-Reflection）：生成语言强化线索来帮助参与者实现自我完善。这个角色由大语言模型承担，能够为未来的试验提供宝贵的反馈。自我反思模型利用奖励信号、当前轨迹和其持久记忆生成具体且相关的反馈，并存储在记忆组件中。智能体利用这些经验（存储在长期记忆中）来快速改进决策</li>
+</ul>
+<h1 id="4-react">4. ReAct</h1>
+<blockquote>
+<p>引导模型将复杂问题进行拆解，一步一步地进行推理 (Reasoning) 和行动 (Action)，同时还引入了观察 (Observation) 环节，在每次执行(Action) 之后，都会先观察(Observation) 当前现状，然后进行下一步推理(Reason)</p>
+</blockquote>
+<ul>
+<li>思维链 (Chain of Thought): 将一个大的复杂任务进行拆解，拆解成多个思维步骤</li>
+<li>推理(Reasoning): 负责分析和处理输入的数据，生成有效的决策</li>
+<li>行动(Action): 执行具体操作</li>
+<li>观察(Observation): 监控和收集环境反馈数据，为下一步推理和行动提供依</li>
+</ul>
+<h1 id="2个准则">2个准则：</h1>
+<ul>
+<li>好的 prompt 不是一次调整好的</li>
+<li>关于评判提示词好/坏, 最好有一个准则</li>
+</ul>
+<p>9个要点：</p>
+<ol>
+<li>让模型帮你生成 (Prompt generator)</li>
+<li>写得尽可能清晰 (Be clear and direct)</li>
+<li>给模型更多的例子 (Use examples)   zero-shot / one-shot / few-shot</li>
+<li>给模型的思考空间 (Let Claude think (chain of thought))  [think it step by step]</li>
+<li>使用XML标签      (Use XML tags)  [针对容易让模型带有缩进混乱的东西]</li>
+<li>给模型角色       (Give Claude a role)</li>
+<li>让模型直接补全    (Prefill Claude's response)   [让模型直接补全]</li>
+<li>思维链式 prompt  (workflow: prompt1 -&gt; step1, prompt2 -&gt; step2, ...)</li>
+</ol>
+<h1 id="context-engineering"><strong>Context Engineering</strong></h1>
+<blockquote>
+<p>在Multi-agennt 或者多步任务中，中间过程会产生大量上下文信息，但这些上下文信息较为繁杂冗余，如果每次都将上下文“一股脑”打包到 prompt 中输入给LLM 十分占用 token 且可能混淆关键信息，上下文工程，如何通过一套程序化的规则，来自动管理和修改“上下文”， 确保 Agent 在 自主行动中始终符合用户的最初要求[Goal]</p>
+</blockquote>
+<ul>
+<li>notebooker:  引入新的 tool/agent ，仅保存上下文中的关键信息，不再“一股脑”的将中间信息全部拼接起来【一般将笔记拼接到“首/尾”（相对于transformer 架构更加显眼）】</li>
+<li>优化上下文长度</li>
+<li>引入RAG，将上下文信息存入到向量数据库中</li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#1-chain-of-thoughts">1. chain of thoughts</a></li>
+<li><a href="#2-self-refine">2. Self-Refine</a></li>
+<li><a href="#3-reflection">3. Reflection</a></li>
+<li><a href="#4-react">4. ReAct</a></li>
+<li><a href="#2%E4%B8%AA%E5%87%86%E5%88%99">2个准则：</a></li>
+<li><a href="#context-engineering"><strong>Context Engineering</strong></a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://liyihan5520-wq.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

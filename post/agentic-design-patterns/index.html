@@ -1,0 +1,242 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agentic Design Patterns | YH&#39;s Blog</title>
+<link rel="shortcut icon" href="https://liyihan5520-wq.github.io//favicon.ico?v=1764167206896">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://liyihan5520-wq.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Agentic Design Patterns | YH&#39;s Blog - Atom Feed" href="https://liyihan5520-wq.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="Key Components: Perception, Planning, Tooling, Memory Management, Action Selection
+Key insight: Proper Agent design depe..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://liyihan5520-wq.github.io/">
+  <img class="avatar" src="https://liyihan5520-wq.github.io//images/avatar.png?v=1764167206896" alt="">
+  </a>
+  <h1 class="site-title">
+    YH&#39;s Blog
+  </h1>
+  <p class="site-description">
+    A junior programmer, focusing on Agent and LLM.     Keep learning and sharing knowledge of  AI
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Agentic Design Patterns
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-11-25
+              </span>
+              <span>
+                6 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>Key Components: Perception, Planning, Tooling, Memory Management, Action Selection<br>
+Key insight: Proper Agent design depends on the task</p>
+<p>目前梳理出的Agent设计模式有 9 种，分别为：ReAct/ Plan and Solve/ Reason without Observation/ LLMCompiler/ Basic Reflection/ Reflexion / Language Agent Tree Search</p>
+<p>Google 团队推出的 《Agentic design patterns》 更加详细地阐述了从基础到高级的设计理念与实现方法  https://github.com/xindoo/agentic-design-patterns</p>
+<h1 id="react-pattern">ReAct Pattern:</h1>
+<ul>
+<li>模仿人类解决问题的过程，将单轮回答拆成多轮 TAO 循环： 思考（分析、规划） -&gt; 行动(执行工具调用/环境交互) -&gt;观察(环境变化)-&gt;再思考 循环往复</li>
+<li>将 思考、行动、观察 三者解耦，得到事件驱动的，可解释、可调试、可扩展的通用 Agent 框架</li>
+</ul>
+<p>from langchain.agents import create_react_agent, AgentExecutor<br>
+from langchain_openai import ChatOpenAI<br>
+from langchain.tools import BaseTool<br>
+class Calculator(BaseTool):<br>
+name = &quot;calculator&quot;<br>
+description = &quot;eval math&quot;<br>
+def _run(self, expr: str):<br>
+return eval(expr)<br>
+llm   = ChatOpenAI(temperature=0)<br>
+tools = [Calculator()]<br>
+agent = create_react_agent(llm, tools, hub.pull(&quot;hwchase17/react&quot;))<br>
+[把「LLM + 工具集合 + ReAct 提示模板」封装成一个 可序列化的 Runnable]<br>
+executor = AgentExecutor(agent=agent, tools=tools, verbose=True)<br>
+[实现 TAO 循环调度器（Thought-Action-Observation）]</p>
+<p><strong>优点</strong>： 动态适应性强，能实时根据环境观察灵活调整行动计划，其推理轨迹使得整个决策过程高度可解释，有利于开发者调试，增强用户信任度<br>
+<strong>缺点</strong>：每次工具调用都需要进行一次LLM 推理，执行速度慢，token 消耗高，上下文难以管理，“走一步看一步”可能陷入局部最优<br>
+<strong>适用场景</strong>：适合需要与外部环境进行持续交互的场景</p>
+<h1 id="plan-execute">Plan &amp; Execute</h1>
+<ul>
+<li>将Agent 的工作流明确地分为两个独立阶段，一个由功能强大的LLM 负责“规划”阶段，和一个更轻量级或特定模型负责“执行”阶段，在规划阶段由功能强大的 LLM 一次性生成一个详细的、多步骤的静态计划，执行器根据计划逐步完成</li>
+<li>牺牲React 的实时适应性，换来更高的执行效率和更低的运营成本。这种设计模式通过将 &quot;智慧（规划）&quot; 与“体力（执行）”解耦</li>
+</ul>
+<p><strong>优点</strong>： token 花费少，强制任务开始时进行全局思考，有助于避免ReAct 可能出现的局部最优问题<br>
+<strong>缺点</strong>：鲁棒性差，计划是静态的，无法在执行过程中应对突发状况或错误<br>
+<strong>适用场景</strong>：适用流程相对固定，但步骤繁多，需要调用多种工具的复杂任务</p>
+<p>#Reason without Observation</p>
+<ul>
+<li>ReWOO, 无观察推理 Plan &amp; Execute 架构的高效变体，其核心理念在于， planner 一次性生成一个完整的、包含变量站位符的计划，如 #E1 = Tool[argument] 代表工具调用的输出，可以在后续步骤中直接引用，从而实现数据的高效传递</li>
+<li>将编译原理中的“变量” 概念引入自然语言计划，实现更高效的数据流编排</li>
+</ul>
+<p><strong>优点</strong>：通过一次性规划整个任务链，避免了ReAct 中反复调用 LLM 所产生的冗余提示词和上下文，显著减少了 token 消耗<br>
+<strong>缺点</strong>:  尽管引入了变量，其任务执行本质上仍是串行的，无法充分利用可以并行的任务，与 Plan &amp; Execute 类似<br>
+<strong>使用场景</strong>:  适合需要链式调用工具来获取信息，且工具之间需要传递数据</p>
+<h1 id="llm-compiler">LLM Compiler</h1>
+<ul>
+<li>让Planner 生成一个有向无环图（DAG），而非简单的列表，这个任务图清晰定义了所有任务、所需工具，以及任务间的依赖关系，独立的任务调度单元会根据这个 DAG 自动执行满足依赖的任务，从而实现最大化的并发执行，提供显著的速度提升</li>
+</ul>
+<p><strong>优点</strong>：能够实现极高的执行效率，节约成本，减少总体执行时间，任务图的输出便于理解和调试，提高了可解释性<br>
+<strong>缺点</strong>：工程实现难度高，需要构建复杂的任务调度单元和依赖管理系统。单点中断可能导致整个流程失败<br>
+<strong>适用场景</strong>：需要同时获取多项信息或调用多个 API 完成任务的场景</p>
+<p>#Basic Reflection</p>
+<ul>
+<li>明确将 “反思”，作为Agent 工作流中的一个步骤，使模型能够思考其自身思考过程，并根据内在逻辑进行自我纠正</li>
+</ul>
+<p><strong>优点</strong>：即使简单的反思循环，能够在创造性/逻辑性任务中带来显著的性能提升，这种方法可以帮助LLM 减少输出中的偏见，提升安全性和<br>
+<strong>缺点</strong>：缺少外部反馈，单纯让另一个模型去“挑刺”， Agent 可能会陷入低效的自我循环中，无法找到正确的解决方案<br>
+<strong>适用场景</strong>: 需要迭代优化的创作或编程任务</p>
+<p>#Reflexion</p>
+<ul>
+<li>引入评估器 evaluator 判断当前轨迹成功与否，由reflector 生成文本化反思，这段反思被“动态记忆”储存起来，并在下一次尝试中作用于上下文，指导Agent 避免重复过去错误</li>
+</ul>
+<p><strong>优点</strong>：其记忆是显示的反思文本，Agent 的“学习”过程透明可追踪，提供了更高的可解释性<br>
+<strong>缺点</strong>：高度依赖于 LLM 能否准确评估自己的表现，并生成有用的反思，引入了记忆，同时也是对上下文管理的考验<br>
+<strong>适用场景</strong>: 需要从失败中汲取教训以找到解决方案的复杂任务（强化学习/元学习）</p>
+<h1 id="language-agent-tree-search">Language Agent Tree Search</h1>
+<ul>
+<li>将语言模型的推理能力与经典的“蒙特卡洛树搜索”算法结合，创造出一个能够探索多条可能路径并进行深度决策的框架。</li>
+<li>将LLM 作为 价值函数和优化器，通过树状搜索同时探索多个 React 序列，并利用反思和外部反馈来评估和回溯最优路径</li>
+</ul>
+<p><strong>优点</strong>: 能够在复杂的决策空间进行深度探索，避免单一路径的失败。该框架在多种任务上均表现出优越性能，是一种综合可靠的强大框架<br>
+<strong>缺点</strong> 为了保证效果，往往需要大量的 LLM 调用<br>
+<strong>适用场景</strong>： 适合需要深度探索和权衡多种可能性的复杂决策任务</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#react-pattern">ReAct Pattern:</a></li>
+<li><a href="#plan-execute">Plan &amp; Execute</a></li>
+<li><a href="#llm-compiler">LLM Compiler</a></li>
+<li><a href="#language-agent-tree-search">Language Agent Tree Search</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://liyihan5520-wq.github.io/post/prompt-engineerning/">
+              <h3 class="post-title">
+                Prompt Engineerning
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://liyihan5520-wq.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
