@@ -1,0 +1,330 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>《Agentic Design Patterns》 (9~16) | YH&#39;s Blog</title>
+<link rel="shortcut icon" href="https://liyihan5520-wq.github.io//favicon.ico?v=1775549127679">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://liyihan5520-wq.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="《Agentic Design Patterns》 (9~16) | YH&#39;s Blog - Atom Feed" href="https://liyihan5520-wq.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="第9章： 学习和适应
+学习和适应 使 Agent 能够超越预定义参数进行演化，通过经验和环境交互实现自主改进。 通过学习和适应， Agent 可以有效应对新情况并优化其性能，而无需持续的人工干预。
+
+强化学习： Agent 尝试行动并获得积..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://liyihan5520-wq.github.io/">
+  <img class="avatar" src="https://liyihan5520-wq.github.io//images/avatar.png?v=1775549127679" alt="">
+  </a>
+  <h1 class="site-title">
+    YH&#39;s Blog
+  </h1>
+  <p class="site-description">
+    A junior programmer, focusing on Agent and LLM.     Keep learning and sharing knowledge of  AI
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              《Agentic Design Patterns》 (9~16)
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-12-03
+              </span>
+              <span>
+                8 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h1 id="第9章-学习和适应">第9章： 学习和适应</h1>
+<p>学习和适应 使 Agent 能够超越预定义参数进行演化，通过经验和环境交互实现自主改进。 通过学习和适应， Agent 可以有效应对新情况并优化其性能，而无需持续的人工干预。</p>
+<ul>
+<li>强化学习： Agent 尝试行动并获得积极结果奖励/消极结果惩罚，在动态环境中学习最优行为。适用于控制机器人或游戏角色的 Agent</li>
+<li>监督学习：让 Agent 从标注实例中学习输入与期望输出的映射关系，适用于邮件分类或趋势预测的 Agent</li>
+<li>无监督学习： Agent 在未标注数据中哦该发现隐藏模式和关联，构建环境心理模型并获取洞察，适用于无特定指导的数据探索场景</li>
+<li>基于 LLM 的少样本/零样本学习：利用大语言模型的Agent 通过少量实例，或明确指令快速适应新任务，实现对新命令/情况 的即时响应</li>
+<li>在线学习：持续更新知识库以适应动态环境，对实时响应和持续优化至关重要，适用于处理连续数据流的 Agent</li>
+<li>基于记忆学习： Agent 会议过往经验调整当前行动，增强上下文感知和决策能力，特别适合具备记忆召回能力的Agent</li>
+</ul>
+<h1 id="第10章-模型上下文协议mcp">第10章： 模型上下文协议(MCP)</h1>
+<p>通过提供标准化接口使 LLM 能与外部资源交互，是实现一致性和可预测性集成的关键机制</p>
+<blockquote>
+<p>function call： 为Agent 提供的一组定制工具，一般内置在模型内部，在上下文中被告知哪些工具可用，模型直接生成调用请求<br>
+MCP: 是标准化的通信框架，独立于模型的开放协议层，本身并不提供任何工具，模型通过MCP 客户端请求MCP Server</p>
+</blockquote>
+<p>连接本地 MCP 服务器:</p>
+<pre><code>import os
+from google.adk.agents import LlmAgent
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
+
+## 创建一个可靠的绝对路径，指向名为 'mcp_managed_files' 的文件夹
+## 该文件夹位于此 Agent 脚本所在的同一目录中。
+## 这确保了 Agent 开箱即用地进行演示。
+## 对于生产环境，您需要将此路径指向一个更持久和安全的位置。
+TARGET_FOLDER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), &quot;mcp_managed_files&quot;)
+
+## 在 Agent 需要之前确保目标目录存在。
+os.makedirs(TARGET_FOLDER_PATH, exist_ok=True)
+
+root_agent = LlmAgent(
+    model='gemini-2.0-flash',
+    name='filesystem_assistant_agent',
+    instruction=(
+        'Help the user manage their files. You can list files, read files, and write files. '
+        f'You are operating in the following directory: {TARGET_FOLDER_PATH}'
+    ),
+    tools=[
+        MCPToolset(
+            connection_params=StdioServerParameters(
+                command='npx',
+                args=[
+                    &quot;-y&quot;,  # npx 的参数，用于自动确认安装
+                    &quot;@modelcontextprotocol/server-filesystem&quot;,
+                    # 这必须是文件夹的绝对路径。
+                    TARGET_FOLDER_PATH,
+                ],
+            ),
+            # 可选：您可以过滤从 MCP 服务器公开的工具。
+            # 例如，仅允许读取：
+            # tool_filter=['list_directory', 'read_file']
+        )
+    ],
+)
+</code></pre>
+<p>使用 FastMCP 创建 MCP服务器</p>
+<pre><code>from fastmcp import FastMCP, Client
+
+## 初始化 FastMCP 服务器。
+mcp_server = FastMCP()
+
+## 定义一个简单的工具函数。
+## `@mcp_server.tool` 装饰器将此 Python 函数注册为 MCP 工具。
+## 文档字符串成为 LLM 的工具描述。
+@mcp_server.tool
+def greet(name: str) -&gt; str:
+    &quot;&quot;&quot;
+    生成个性化的问候语。
+
+    参数：
+        name: 要问候的人的名字。
+
+    返回：
+        问候语字符串。
+    &quot;&quot;&quot;
+    return f&quot;Hello, {name}! Nice to meet you.&quot;
+
+## 或者如果您想从脚本运行它：
+if __name__ == &quot;__main__&quot;:
+    mcp_server.run(
+        transport=&quot;http&quot;,
+        host=&quot;127.0.0.1&quot;,
+        port=8000
+    )
+</code></pre>
+<h1 id="第11章目标设定和监控">第11章：目标设定和监控</h1>
+<p>为 Agent 提供具体的工作目标，并为其配备跟踪进度和确定这些目标是否已实现的手段</p>
+<h1 id="第12章异常处理和恢复">第12章：异常处理和恢复</h1>
+<p>异常处理和恢复对于构建强大和可靠的 Agent 至关重要，此模式涉及检测错误、优雅地处理错误以及实施恢复策略</p>
+<h1 id="第13章-人机协同">第13章: 人机协同</h1>
+<p>人机协同模式在 Agent 开发和部署中扮演着关键战略角色，它巧妙地将人类认知的独特优势，与AI 的计算能力和效率相结合，通过<strong>整合人工智能与人类输入来增强 Agent 能力</strong>，其目标并非取代人类输入，而是通过确保关键判断和决策基于人类理解来增强人类能力</p>
+<ul>
+<li>人类监督：监控 Agent 性能和输出，确保遵循指南并防止不良结果</li>
+<li>干预和纠正:  在 Agent 遇到错误或模糊场景并请求人工干预，人类操作员可纠正错误、提供缺失数据或指导 Agent</li>
+<li>学习人类反馈: RLHF 算法直接影响 Agent 的学习轨迹</li>
+<li>决策增强： Agent 向人类提供分析和建议，由人类做出最终决定</li>
+</ul>
+<h1 id="第14章-知识检索rag">第14章: 知识检索(RAG)</h1>
+<p>RAG 使 LLM 能够访问和整合外部信息、实时数据和特定上下文内容，从而显著提高其输出的准确性、相关性和事实基础。</p>
+<ul>
+<li>图 RAG(Graph RAG): 是检索增强生成的一种高级形式，它利用知识图谱而不是简单的向量数据库进行信息检索。通过导航结构化知识库中数据实体（节点）之间的明确关系（边）来回答复杂查询。 一个关键优势是它能够综合来自多个文档的碎片化信息答案。通过这些连接，GraphRAG 提供更多上下文准确和细致的响应。</li>
+</ul>
+<blockquote>
+<p>GraphRAG 为复杂问题提供了卓越的上下文推理，但实施和维护成本要高很多，并且可能引入更高的延迟</p>
+</blockquote>
+<ul>
+<li>Agentic RAG:  引入一个推理和决策层，以显著增强信息提取的可靠性，其不仅仅是检索和增强，通过引入 Agent ，充当知识的关键守门人和精炼者，主动质疑索引知识的质量、相关性和完整性</li>
+</ul>
+<ol>
+<li>Agent 擅长反思和源验证</li>
+<li>Agent 擅长协调知识冲突</li>
+<li>Agent 可以执行多步推理来综合复杂答案</li>
+<li>Agent 可以识别知识差距并使用外部工具</li>
+</ol>
+<blockquote>
+<p>Agentic RAG 虽然功能强大，但 agentic 层引入的复杂性和成本的显著增加</p>
+</blockquote>
+<h1 id="第15章-agent-间通信a2a">第15章： Agent 间通信(A2A)</h1>
+<p>Agent2Agent 协议是一个旨在实现不同 AI Agent 框架间通信与协作的开放标准，其确保了互操作性，允许 使用 LangGraph、CrewAI 或 Google ADK 等技术开发的 AI Agent 能够协同工作，无论其来源或框架差异。<br>
+A2A 的基础支柱包括：</p>
+<ul>
+<li>核心参与者:  用户、A2A 客户端、A2A 服务器</li>
+<li>Agent 卡片</li>
+<li>Agent 发现</li>
+<li>通信和任务</li>
+<li>交互机制及安全性</li>
+</ul>
+<h1 id="第16章-资源感知优化">第16章： 资源感知优化</h1>
+<p>资源感知优化使智能 Agent 能够在 运行过程中 动态监控和管理计算、时间和财务资源。</p>
+<ul>
+<li>动态模型切换： 根据手头任务复杂性和可用计算资源战略性地选择 LLM （轻量/复杂）</li>
+<li>上下文修剪和摘要：通过智能摘要和选择性保留交互历史中最相关的信息，最小化提示词 token</li>
+<li>主动资源预测： 通过预测额未来工作负载和系统需求来预测资源需求</li>
+</ul>
+<h1 id="第17章-推理技术">第17章： 推理技术</h1>
+<h1 id="第18章安全模式">第18章：安全模式</h1>
+<p>引导 Agent 的行为和输出，防止有害、有偏见、无关或其他不良响应</p>
+<ul>
+<li>模块化和关注点分离：一个单体的、无所不能的 Agent 是脆弱且难以调试的</li>
+<li>通过结构化日志记录实现可观测性:</li>
+<li>最小权限原则:  Agent 应该被授予执行其任务所需的绝对最小权限集</li>
+</ul>
+<h1 id="第19章-评估和监控">第19章: 评估和监控</h1>
+<p>评估智能 Agent 超越了传统测试，在真实世界环境中持续测量其有效性、效率以及对要求的遵守</p>
+<h1 id="第20章优先级排序">第20章：优先级排序</h1>
+<p>Agent 使用优先级排序来有效管理任务，目标和子目标，指导后续行动</p>
+<h1 id="第21章探索和发现">第21章：探索和发现</h1>
+<p>智能 Agent 能够主动追求新信息和可能性，这对于导航复杂和不断演变的环境至关重要</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E7%AC%AC9%E7%AB%A0-%E5%AD%A6%E4%B9%A0%E5%92%8C%E9%80%82%E5%BA%94">第9章： 学习和适应</a></li>
+<li><a href="#%E7%AC%AC10%E7%AB%A0-%E6%A8%A1%E5%9E%8B%E4%B8%8A%E4%B8%8B%E6%96%87%E5%8D%8F%E8%AE%AEmcp">第10章： 模型上下文协议(MCP)</a></li>
+<li><a href="#%E7%AC%AC11%E7%AB%A0%E7%9B%AE%E6%A0%87%E8%AE%BE%E5%AE%9A%E5%92%8C%E7%9B%91%E6%8E%A7">第11章：目标设定和监控</a></li>
+<li><a href="#%E7%AC%AC12%E7%AB%A0%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%92%8C%E6%81%A2%E5%A4%8D">第12章：异常处理和恢复</a></li>
+<li><a href="#%E7%AC%AC13%E7%AB%A0-%E4%BA%BA%E6%9C%BA%E5%8D%8F%E5%90%8C">第13章: 人机协同</a></li>
+<li><a href="#%E7%AC%AC14%E7%AB%A0-%E7%9F%A5%E8%AF%86%E6%A3%80%E7%B4%A2rag">第14章: 知识检索(RAG)</a></li>
+<li><a href="#%E7%AC%AC15%E7%AB%A0-agent-%E9%97%B4%E9%80%9A%E4%BF%A1a2a">第15章： Agent 间通信(A2A)</a></li>
+<li><a href="#%E7%AC%AC16%E7%AB%A0-%E8%B5%84%E6%BA%90%E6%84%9F%E7%9F%A5%E4%BC%98%E5%8C%96">第16章： 资源感知优化</a></li>
+<li><a href="#%E7%AC%AC17%E7%AB%A0-%E6%8E%A8%E7%90%86%E6%8A%80%E6%9C%AF">第17章： 推理技术</a></li>
+<li><a href="#%E7%AC%AC18%E7%AB%A0%E5%AE%89%E5%85%A8%E6%A8%A1%E5%BC%8F">第18章：安全模式</a></li>
+<li><a href="#%E7%AC%AC19%E7%AB%A0-%E8%AF%84%E4%BC%B0%E5%92%8C%E7%9B%91%E6%8E%A7">第19章: 评估和监控</a></li>
+<li><a href="#%E7%AC%AC20%E7%AB%A0%E4%BC%98%E5%85%88%E7%BA%A7%E6%8E%92%E5%BA%8F">第20章：优先级排序</a></li>
+<li><a href="#%E7%AC%AC21%E7%AB%A0%E6%8E%A2%E7%B4%A2%E5%92%8C%E5%8F%91%E7%8E%B0">第21章：探索和发现</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://liyihan5520-wq.github.io/post/python-asyncio/">
+              <h3 class="post-title">
+                Asyncio 异步并发
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://liyihan5520-wq.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

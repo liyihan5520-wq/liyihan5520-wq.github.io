@@ -1,0 +1,209 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GraphRAG | YH&#39;s Blog</title>
+<link rel="shortcut icon" href="https://liyihan5520-wq.github.io//favicon.ico?v=1775549127679">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://liyihan5520-wq.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="GraphRAG | YH&#39;s Blog - Atom Feed" href="https://liyihan5520-wq.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="**为什么要用 知识图谱构建 RAG? **
+传统RAG中，通过计算 embedding 相似度来检索文本
+
+老王喜欢吃西瓜。
+老王也喜欢吃桃子。
+小王喜欢吃西瓜
+西瓜和桃子都是甜甜的水果
+
+针对上述文本构成的知识库，查询“老王喜欢吃什么水..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://liyihan5520-wq.github.io/">
+  <img class="avatar" src="https://liyihan5520-wq.github.io//images/avatar.png?v=1775549127679" alt="">
+  </a>
+  <h1 class="site-title">
+    YH&#39;s Blog
+  </h1>
+  <p class="site-description">
+    A junior programmer, focusing on Agent and LLM.     Keep learning and sharing knowledge of  AI
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              GraphRAG
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-12-09
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>**为什么要用 知识图谱构建 RAG? **</p>
+<p>传统RAG中，通过计算 embedding 相似度来检索文本</p>
+<blockquote>
+<p>老王喜欢吃西瓜。<br>
+老王也喜欢吃桃子。<br>
+小王喜欢吃西瓜<br>
+西瓜和桃子都是甜甜的水果</p>
+</blockquote>
+<p>针对上述文本构成的知识库，查询“老王喜欢吃什么水果? ” 是比较简单的，可以根据相似度快速检索出 “西瓜&quot;“桃子”等等，但是如果查询 &quot;文中提到了几次西瓜?&quot; 难以根据相似度获得正确答案。<br>
+以上总结为传统 RAG 的第一个问题  <strong>全局问题和局部片段之间匹配度太低</strong> （更深层次，对段落划分太细容易导致语义没有关联，划分太粗可能导致细节信息缺失）</p>
+<p><strong>如何构造知识图谱知识库?</strong></p>
+<ol>
+<li>LPG 生成（标签属性图）<br>
+传统的知识图谱构建算法晦涩难懂，而大语言模型在处理文本上具有极强的能力，我们可以在 prompt 做出如下规定:</li>
+</ol>
+<blockquote>
+<p>目标：  生成“老王喜欢吃西瓜”的LPG<br>
+步骤： 1.识别&quot;实体&quot;类型，包括&quot;人&quot;,&quot;物体&quot;,&quot;味道&quot;<br>
+2.识别&quot;实体&quot;之间的“关系”<br>
+返回格式： 实体1：类型：实体描述<br>
+实体2：类型：实体描述<br>
+实体1-(关系1)-&gt;实体2：关系描述</p>
+</blockquote>
+<p>eg:   老王：人：爱吃瓜<br>
+西瓜：水果：老王爱吃<br>
+老王-(爱吃)-&gt; 西瓜：老王爱吃的东西<br>
+GraphRAG 会针对文本中的每一句话，生成对应的LPG</p>
+<ol start="2">
+<li>合并密集节点成一个整体 (Leiden algorithm)</li>
+</ol>
+<ul>
+<li>1.将密集节点构成的子图中，点和边的描述信息，生成一个更高级的总结性描述(不仅仅是简单的信息抽象，往往还能够推理出额外的信息)</li>
+<li>2.将密集节点迭代合并，最终形成一个知识图谱的层级结构，结构越往上，信息就越抽象、越精炼，越往下就越接近原文、越具体</li>
+<li>3.将原始文档、层级LPG 均放入到知识向量库中</li>
+</ul>
+<p>3.层级查询：<br>
+在使用知识库检索时，既可以自顶向下查询（Global search）优先查询到抽象信息，也可以自底向上查询（Local search）强调查询细节</p>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://liyihan5520-wq.github.io/post/lesslessagentic-design-patternsgreatergreater-9~16/">
+              <h3 class="post-title">
+                《Agentic Design Patterns》 (9~16)
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://liyihan5520-wq.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

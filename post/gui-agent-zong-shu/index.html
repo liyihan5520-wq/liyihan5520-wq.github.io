@@ -1,0 +1,225 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GUI-Agent 综述 | YH&#39;s Blog</title>
+<link rel="shortcut icon" href="https://liyihan5520-wq.github.io//favicon.ico?v=1775549127679">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://liyihan5520-wq.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="GUI-Agent 综述 | YH&#39;s Blog - Atom Feed" href="https://liyihan5520-wq.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="定义： 模仿人类操纵手机、网页、电脑
+独特挑战：
+
+马尔科夫的序列决策问题，收益延迟
+网站和应用程序频繁更新，致使在线观测结果不同于过时的离线信息
+各种干扰项，如弹出广告、验证、登录请求
+页面选项的不确定性，个性化页面、动态选项、搜索结果的..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://liyihan5520-wq.github.io/">
+  <img class="avatar" src="https://liyihan5520-wq.github.io//images/avatar.png?v=1775549127679" alt="">
+  </a>
+  <h1 class="site-title">
+    YH&#39;s Blog
+  </h1>
+  <p class="site-description">
+    A junior programmer, focusing on Agent and LLM.     Keep learning and sharing knowledge of  AI
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              GUI-Agent 综述
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-12-17
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p><strong>定义</strong>： 模仿人类操纵手机、网页、电脑<br>
+独特挑战：</p>
+<ul>
+<li>马尔科夫的<strong>序列决策问题</strong>，收益延迟</li>
+<li>网站和应用程序<strong>频繁更新</strong>，致使在线观测结果不同于过时的离线信息</li>
+<li>各种干扰项，如<strong>弹出广告、验证、登录请求</strong></li>
+<li>页面选项的不确定性，<strong>个性化页面、动态选项、搜索结果的随机顺序</strong></li>
+<li>不确定的挑战和故障，如<strong>网页加载不完整</strong> 或者是 对某些网站的<strong>临时访问受限</strong></li>
+</ul>
+<p>技术路线：<br>
+<strong>Perception</strong>: 感知、解析当前状态<br>
+<strong>Planning/Decision</strong>:  依据用户任务、当前状态和历史行为，推理和制定未来规划，并给出接下来具体动作<br>
+1.采用 文本 LLM 执行规划决策任务</p>
+<blockquote>
+<p>由于纯文本大模型拥有更强的逻辑推理能力，可以将当前状态以自然语言描述的形式输入给文本 LLM，让文本 LLM 结合描述，给出实现规划<br>
+缺点：使用自然语言描述图片，势必会造成信息损失，难以完全反应真实状态<br>
+2.采用闭源 VLM<br>
+许多闭源VLM 拥有非常强的视觉感知能力，能够同时将 Perception 和 Planning/Decision 合二为一，直接从当前屏幕状态给出接下来的具体动作<br>
+缺点：领域内视觉标识 VLM 可能没见过，难以完全理解/使用  截屏信息<br>
+3.微调开源 VLM<br>
+使用领域数据集执行 SFT 微调开源 VLM，增强其领域能力<br>
+缺点：数据集难以标识、收集</p>
+</blockquote>
+<p><strong>Perception 方法</strong><br>
+1.截屏 XML (View Tree)<br>
+冗余信息很多，使用前需要进行精简。<br>
+国内 App 精度较差，有些界面元素信息不存在，或者位置不准<br>
+2.屏幕图片(Screenshot)<br>
+OCR、Summarization、Icon Detection&amp; Captioning、Convert the UI Screenshot to XML or Codes via VLM<br>
+3.多种信息融合</p>
+<p>VLM-driven UI Agents<br>
+VLM： 同时完成感知、规划和决策任务</p>
+<ul>
+<li>元素定位 (Grounding) 能力</li>
+<li>指称 (Referring) 能力</li>
+<li>细粒度 OCR 能力： 支持高分辨率</li>
+<li>UI 界面理解能力, UI相关问答</li>
+<li>UI 任务执行和推理</li>
+</ul>
+<p>Perception + Close VLM:<br>
+SoM(Set-of-Mark Prompting)<br>
+SoM 利用检测模型，将图像划分为不同粒度界别的区域，并在这些区域上添加一组标记</p>
+<p>Open VLM:</p>
+<ul>
+<li>针对 GUI 任务特点设计特有的 VLM 结构<br>
+pix2Act(DeepMind)，Auto-GUI(Meta)，CogAgent(Zhipu)，ScreenAI(DeepMind)</li>
+<li>使用GUI 任务数据精调通用VLM，不改变其架构<br>
+SeeClick(ShanghaiAI Lab), Ferret-UI(Apple), MobileVLM(XiaoMi)</li>
+</ul>
+<p>如何将GUI-Agent 做好?</p>
+<ul>
+<li>数据采集的覆盖度和效率是关键挑战</li>
+<li>模型泛化性和从错误中恢复能力有待提升</li>
+<li>反问、多轮交互、执行效率等</li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://liyihan5520-wq.github.io/post/graphrag/">
+              <h3 class="post-title">
+                GraphRAG
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://liyihan5520-wq.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

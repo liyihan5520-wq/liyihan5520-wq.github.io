@@ -1,0 +1,1027 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://liyihan5520-wq.github.io/</id>
+    <title>YH&apos;s Blog</title>
+    <updated>2026-04-07T08:06:17.365Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://liyihan5520-wq.github.io/"/>
+    <link rel="self" href="https://liyihan5520-wq.github.io/atom.xml"/>
+    <subtitle>A junior programmer, focusing on Agent and LLM.     Keep learning and sharing knowledge of  AI</subtitle>
+    <logo>https://liyihan5520-wq.github.io/images/avatar.png</logo>
+    <icon>https://liyihan5520-wq.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2026, YH&apos;s Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[UI-Tars系列]]></title>
+        <id>https://liyihan5520-wq.github.io/post/ui-tars-xi-lie/</id>
+        <link href="https://liyihan5520-wq.github.io/post/ui-tars-xi-lie/">
+        </link>
+        <updated>2025-12-18T07:57:52.000Z</updated>
+        <content type="html"><![CDATA[<p>[UI-TARS: Pioneering Automated GUI Interaction with Native Agents]{https://arxiv.org/abs/2501.12326}</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[GUI-Agent 综述]]></title>
+        <id>https://liyihan5520-wq.github.io/post/gui-agent-zong-shu/</id>
+        <link href="https://liyihan5520-wq.github.io/post/gui-agent-zong-shu/">
+        </link>
+        <updated>2025-12-17T11:05:35.000Z</updated>
+        <content type="html"><![CDATA[<p><strong>定义</strong>： 模仿人类操纵手机、网页、电脑<br>
+独特挑战：</p>
+<ul>
+<li>马尔科夫的<strong>序列决策问题</strong>，收益延迟</li>
+<li>网站和应用程序<strong>频繁更新</strong>，致使在线观测结果不同于过时的离线信息</li>
+<li>各种干扰项，如<strong>弹出广告、验证、登录请求</strong></li>
+<li>页面选项的不确定性，<strong>个性化页面、动态选项、搜索结果的随机顺序</strong></li>
+<li>不确定的挑战和故障，如<strong>网页加载不完整</strong> 或者是 对某些网站的<strong>临时访问受限</strong></li>
+</ul>
+<p>技术路线：<br>
+<strong>Perception</strong>: 感知、解析当前状态<br>
+<strong>Planning/Decision</strong>:  依据用户任务、当前状态和历史行为，推理和制定未来规划，并给出接下来具体动作<br>
+1.采用 文本 LLM 执行规划决策任务</p>
+<blockquote>
+<p>由于纯文本大模型拥有更强的逻辑推理能力，可以将当前状态以自然语言描述的形式输入给文本 LLM，让文本 LLM 结合描述，给出实现规划<br>
+缺点：使用自然语言描述图片，势必会造成信息损失，难以完全反应真实状态<br>
+2.采用闭源 VLM<br>
+许多闭源VLM 拥有非常强的视觉感知能力，能够同时将 Perception 和 Planning/Decision 合二为一，直接从当前屏幕状态给出接下来的具体动作<br>
+缺点：领域内视觉标识 VLM 可能没见过，难以完全理解/使用  截屏信息<br>
+3.微调开源 VLM<br>
+使用领域数据集执行 SFT 微调开源 VLM，增强其领域能力<br>
+缺点：数据集难以标识、收集</p>
+</blockquote>
+<p><strong>Perception 方法</strong><br>
+1.截屏 XML (View Tree)<br>
+冗余信息很多，使用前需要进行精简。<br>
+国内 App 精度较差，有些界面元素信息不存在，或者位置不准<br>
+2.屏幕图片(Screenshot)<br>
+OCR、Summarization、Icon Detection&amp; Captioning、Convert the UI Screenshot to XML or Codes via VLM<br>
+3.多种信息融合</p>
+<p>VLM-driven UI Agents<br>
+VLM： 同时完成感知、规划和决策任务</p>
+<ul>
+<li>元素定位 (Grounding) 能力</li>
+<li>指称 (Referring) 能力</li>
+<li>细粒度 OCR 能力： 支持高分辨率</li>
+<li>UI 界面理解能力, UI相关问答</li>
+<li>UI 任务执行和推理</li>
+</ul>
+<p>Perception + Close VLM:<br>
+SoM(Set-of-Mark Prompting)<br>
+SoM 利用检测模型，将图像划分为不同粒度界别的区域，并在这些区域上添加一组标记</p>
+<p>Open VLM:</p>
+<ul>
+<li>针对 GUI 任务特点设计特有的 VLM 结构<br>
+pix2Act(DeepMind)，Auto-GUI(Meta)，CogAgent(Zhipu)，ScreenAI(DeepMind)</li>
+<li>使用GUI 任务数据精调通用VLM，不改变其架构<br>
+SeeClick(ShanghaiAI Lab), Ferret-UI(Apple), MobileVLM(XiaoMi)</li>
+</ul>
+<p>如何将GUI-Agent 做好?</p>
+<ul>
+<li>数据采集的覆盖度和效率是关键挑战</li>
+<li>模型泛化性和从错误中恢复能力有待提升</li>
+<li>反问、多轮交互、执行效率等</li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[GraphRAG]]></title>
+        <id>https://liyihan5520-wq.github.io/post/graphrag/</id>
+        <link href="https://liyihan5520-wq.github.io/post/graphrag/">
+        </link>
+        <updated>2025-12-09T05:56:08.000Z</updated>
+        <content type="html"><![CDATA[<p>**为什么要用 知识图谱构建 RAG? **</p>
+<p>传统RAG中，通过计算 embedding 相似度来检索文本</p>
+<blockquote>
+<p>老王喜欢吃西瓜。<br>
+老王也喜欢吃桃子。<br>
+小王喜欢吃西瓜<br>
+西瓜和桃子都是甜甜的水果</p>
+</blockquote>
+<p>针对上述文本构成的知识库，查询“老王喜欢吃什么水果? ” 是比较简单的，可以根据相似度快速检索出 “西瓜&quot;“桃子”等等，但是如果查询 &quot;文中提到了几次西瓜?&quot; 难以根据相似度获得正确答案。<br>
+以上总结为传统 RAG 的第一个问题  <strong>全局问题和局部片段之间匹配度太低</strong> （更深层次，对段落划分太细容易导致语义没有关联，划分太粗可能导致细节信息缺失）</p>
+<p><strong>如何构造知识图谱知识库?</strong></p>
+<ol>
+<li>LPG 生成（标签属性图）<br>
+传统的知识图谱构建算法晦涩难懂，而大语言模型在处理文本上具有极强的能力，我们可以在 prompt 做出如下规定:</li>
+</ol>
+<blockquote>
+<p>目标：  生成“老王喜欢吃西瓜”的LPG<br>
+步骤： 1.识别&quot;实体&quot;类型，包括&quot;人&quot;,&quot;物体&quot;,&quot;味道&quot;<br>
+2.识别&quot;实体&quot;之间的“关系”<br>
+返回格式： 实体1：类型：实体描述<br>
+实体2：类型：实体描述<br>
+实体1-(关系1)-&gt;实体2：关系描述</p>
+</blockquote>
+<p>eg:   老王：人：爱吃瓜<br>
+西瓜：水果：老王爱吃<br>
+老王-(爱吃)-&gt; 西瓜：老王爱吃的东西<br>
+GraphRAG 会针对文本中的每一句话，生成对应的LPG</p>
+<ol start="2">
+<li>合并密集节点成一个整体 (Leiden algorithm)</li>
+</ol>
+<ul>
+<li>1.将密集节点构成的子图中，点和边的描述信息，生成一个更高级的总结性描述(不仅仅是简单的信息抽象，往往还能够推理出额外的信息)</li>
+<li>2.将密集节点迭代合并，最终形成一个知识图谱的层级结构，结构越往上，信息就越抽象、越精炼，越往下就越接近原文、越具体</li>
+<li>3.将原始文档、层级LPG 均放入到知识向量库中</li>
+</ul>
+<p>3.层级查询：<br>
+在使用知识库检索时，既可以自顶向下查询（Global search）优先查询到抽象信息，也可以自底向上查询（Local search）强调查询细节</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[《Agentic Design Patterns》 (9~16)]]></title>
+        <id>https://liyihan5520-wq.github.io/post/lesslessagentic-design-patternsgreatergreater-9~16/</id>
+        <link href="https://liyihan5520-wq.github.io/post/lesslessagentic-design-patternsgreatergreater-9~16/">
+        </link>
+        <updated>2025-12-03T13:20:40.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="第9章-学习和适应">第9章： 学习和适应</h1>
+<p>学习和适应 使 Agent 能够超越预定义参数进行演化，通过经验和环境交互实现自主改进。 通过学习和适应， Agent 可以有效应对新情况并优化其性能，而无需持续的人工干预。</p>
+<ul>
+<li>强化学习： Agent 尝试行动并获得积极结果奖励/消极结果惩罚，在动态环境中学习最优行为。适用于控制机器人或游戏角色的 Agent</li>
+<li>监督学习：让 Agent 从标注实例中学习输入与期望输出的映射关系，适用于邮件分类或趋势预测的 Agent</li>
+<li>无监督学习： Agent 在未标注数据中哦该发现隐藏模式和关联，构建环境心理模型并获取洞察，适用于无特定指导的数据探索场景</li>
+<li>基于 LLM 的少样本/零样本学习：利用大语言模型的Agent 通过少量实例，或明确指令快速适应新任务，实现对新命令/情况 的即时响应</li>
+<li>在线学习：持续更新知识库以适应动态环境，对实时响应和持续优化至关重要，适用于处理连续数据流的 Agent</li>
+<li>基于记忆学习： Agent 会议过往经验调整当前行动，增强上下文感知和决策能力，特别适合具备记忆召回能力的Agent</li>
+</ul>
+<h1 id="第10章-模型上下文协议mcp">第10章： 模型上下文协议(MCP)</h1>
+<p>通过提供标准化接口使 LLM 能与外部资源交互，是实现一致性和可预测性集成的关键机制</p>
+<blockquote>
+<p>function call： 为Agent 提供的一组定制工具，一般内置在模型内部，在上下文中被告知哪些工具可用，模型直接生成调用请求<br>
+MCP: 是标准化的通信框架，独立于模型的开放协议层，本身并不提供任何工具，模型通过MCP 客户端请求MCP Server</p>
+</blockquote>
+<p>连接本地 MCP 服务器:</p>
+<pre><code>import os
+from google.adk.agents import LlmAgent
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
+
+## 创建一个可靠的绝对路径，指向名为 'mcp_managed_files' 的文件夹
+## 该文件夹位于此 Agent 脚本所在的同一目录中。
+## 这确保了 Agent 开箱即用地进行演示。
+## 对于生产环境，您需要将此路径指向一个更持久和安全的位置。
+TARGET_FOLDER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), &quot;mcp_managed_files&quot;)
+
+## 在 Agent 需要之前确保目标目录存在。
+os.makedirs(TARGET_FOLDER_PATH, exist_ok=True)
+
+root_agent = LlmAgent(
+    model='gemini-2.0-flash',
+    name='filesystem_assistant_agent',
+    instruction=(
+        'Help the user manage their files. You can list files, read files, and write files. '
+        f'You are operating in the following directory: {TARGET_FOLDER_PATH}'
+    ),
+    tools=[
+        MCPToolset(
+            connection_params=StdioServerParameters(
+                command='npx',
+                args=[
+                    &quot;-y&quot;,  # npx 的参数，用于自动确认安装
+                    &quot;@modelcontextprotocol/server-filesystem&quot;,
+                    # 这必须是文件夹的绝对路径。
+                    TARGET_FOLDER_PATH,
+                ],
+            ),
+            # 可选：您可以过滤从 MCP 服务器公开的工具。
+            # 例如，仅允许读取：
+            # tool_filter=['list_directory', 'read_file']
+        )
+    ],
+)
+</code></pre>
+<p>使用 FastMCP 创建 MCP服务器</p>
+<pre><code>from fastmcp import FastMCP, Client
+
+## 初始化 FastMCP 服务器。
+mcp_server = FastMCP()
+
+## 定义一个简单的工具函数。
+## `@mcp_server.tool` 装饰器将此 Python 函数注册为 MCP 工具。
+## 文档字符串成为 LLM 的工具描述。
+@mcp_server.tool
+def greet(name: str) -&gt; str:
+    &quot;&quot;&quot;
+    生成个性化的问候语。
+
+    参数：
+        name: 要问候的人的名字。
+
+    返回：
+        问候语字符串。
+    &quot;&quot;&quot;
+    return f&quot;Hello, {name}! Nice to meet you.&quot;
+
+## 或者如果您想从脚本运行它：
+if __name__ == &quot;__main__&quot;:
+    mcp_server.run(
+        transport=&quot;http&quot;,
+        host=&quot;127.0.0.1&quot;,
+        port=8000
+    )
+</code></pre>
+<h1 id="第11章目标设定和监控">第11章：目标设定和监控</h1>
+<p>为 Agent 提供具体的工作目标，并为其配备跟踪进度和确定这些目标是否已实现的手段</p>
+<h1 id="第12章异常处理和恢复">第12章：异常处理和恢复</h1>
+<p>异常处理和恢复对于构建强大和可靠的 Agent 至关重要，此模式涉及检测错误、优雅地处理错误以及实施恢复策略</p>
+<h1 id="第13章-人机协同">第13章: 人机协同</h1>
+<p>人机协同模式在 Agent 开发和部署中扮演着关键战略角色，它巧妙地将人类认知的独特优势，与AI 的计算能力和效率相结合，通过<strong>整合人工智能与人类输入来增强 Agent 能力</strong>，其目标并非取代人类输入，而是通过确保关键判断和决策基于人类理解来增强人类能力</p>
+<ul>
+<li>人类监督：监控 Agent 性能和输出，确保遵循指南并防止不良结果</li>
+<li>干预和纠正:  在 Agent 遇到错误或模糊场景并请求人工干预，人类操作员可纠正错误、提供缺失数据或指导 Agent</li>
+<li>学习人类反馈: RLHF 算法直接影响 Agent 的学习轨迹</li>
+<li>决策增强： Agent 向人类提供分析和建议，由人类做出最终决定</li>
+</ul>
+<h1 id="第14章-知识检索rag">第14章: 知识检索(RAG)</h1>
+<p>RAG 使 LLM 能够访问和整合外部信息、实时数据和特定上下文内容，从而显著提高其输出的准确性、相关性和事实基础。</p>
+<ul>
+<li>图 RAG(Graph RAG): 是检索增强生成的一种高级形式，它利用知识图谱而不是简单的向量数据库进行信息检索。通过导航结构化知识库中数据实体（节点）之间的明确关系（边）来回答复杂查询。 一个关键优势是它能够综合来自多个文档的碎片化信息答案。通过这些连接，GraphRAG 提供更多上下文准确和细致的响应。</li>
+</ul>
+<blockquote>
+<p>GraphRAG 为复杂问题提供了卓越的上下文推理，但实施和维护成本要高很多，并且可能引入更高的延迟</p>
+</blockquote>
+<ul>
+<li>Agentic RAG:  引入一个推理和决策层，以显著增强信息提取的可靠性，其不仅仅是检索和增强，通过引入 Agent ，充当知识的关键守门人和精炼者，主动质疑索引知识的质量、相关性和完整性</li>
+</ul>
+<ol>
+<li>Agent 擅长反思和源验证</li>
+<li>Agent 擅长协调知识冲突</li>
+<li>Agent 可以执行多步推理来综合复杂答案</li>
+<li>Agent 可以识别知识差距并使用外部工具</li>
+</ol>
+<blockquote>
+<p>Agentic RAG 虽然功能强大，但 agentic 层引入的复杂性和成本的显著增加</p>
+</blockquote>
+<h1 id="第15章-agent-间通信a2a">第15章： Agent 间通信(A2A)</h1>
+<p>Agent2Agent 协议是一个旨在实现不同 AI Agent 框架间通信与协作的开放标准，其确保了互操作性，允许 使用 LangGraph、CrewAI 或 Google ADK 等技术开发的 AI Agent 能够协同工作，无论其来源或框架差异。<br>
+A2A 的基础支柱包括：</p>
+<ul>
+<li>核心参与者:  用户、A2A 客户端、A2A 服务器</li>
+<li>Agent 卡片</li>
+<li>Agent 发现</li>
+<li>通信和任务</li>
+<li>交互机制及安全性</li>
+</ul>
+<h1 id="第16章-资源感知优化">第16章： 资源感知优化</h1>
+<p>资源感知优化使智能 Agent 能够在 运行过程中 动态监控和管理计算、时间和财务资源。</p>
+<ul>
+<li>动态模型切换： 根据手头任务复杂性和可用计算资源战略性地选择 LLM （轻量/复杂）</li>
+<li>上下文修剪和摘要：通过智能摘要和选择性保留交互历史中最相关的信息，最小化提示词 token</li>
+<li>主动资源预测： 通过预测额未来工作负载和系统需求来预测资源需求</li>
+</ul>
+<h1 id="第17章-推理技术">第17章： 推理技术</h1>
+<h1 id="第18章安全模式">第18章：安全模式</h1>
+<p>引导 Agent 的行为和输出，防止有害、有偏见、无关或其他不良响应</p>
+<ul>
+<li>模块化和关注点分离：一个单体的、无所不能的 Agent 是脆弱且难以调试的</li>
+<li>通过结构化日志记录实现可观测性:</li>
+<li>最小权限原则:  Agent 应该被授予执行其任务所需的绝对最小权限集</li>
+</ul>
+<h1 id="第19章-评估和监控">第19章: 评估和监控</h1>
+<p>评估智能 Agent 超越了传统测试，在真实世界环境中持续测量其有效性、效率以及对要求的遵守</p>
+<h1 id="第20章优先级排序">第20章：优先级排序</h1>
+<p>Agent 使用优先级排序来有效管理任务，目标和子目标，指导后续行动</p>
+<h1 id="第21章探索和发现">第21章：探索和发现</h1>
+<p>智能 Agent 能够主动追求新信息和可能性，这对于导航复杂和不断演变的环境至关重要</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Asyncio 异步并发]]></title>
+        <id>https://liyihan5520-wq.github.io/post/python-asyncio/</id>
+        <link href="https://liyihan5520-wq.github.io/post/python-asyncio/">
+        </link>
+        <updated>2025-12-02T03:28:07.000Z</updated>
+        <content type="html"><![CDATA[<p><em>许多 Agent 项目中均使用了  asyn/awiat 等异步并发，在此系统梳理一下 python asynico 原理和使用方法</em></p>
+<h2 id="协程">协程:</h2>
+<pre><code>又称微线程 Coroutine，一般子程序（函数）都是层级调用，通过栈实现，调用顺序明确。而协程看上去也是子程序，但在执行过程中，在子程序内部可中断，然后转而执行别的子程序，在适当时再返回接着执行.asyncio 是 python 在语言级实现的 **单进程异步协程框架**，使用 **事件循环(event loop)** 驱动 **协程** 的协作式多任务：
+</code></pre>
+<blockquote>
+<p>一句话概括，让“等IO”的时间片被别的协程拿去干别的活，从而 <em>单线程</em> 也能 <em>高并发</em></p>
+</blockquote>
+<pre><code>def A():
+    print('1')
+    print('2')
+    print('3')
+
+def B():
+    print('x')
+    print('y')
+    print('z')
+</code></pre>
+<p>如果由协程执行，在执行 A 过程中，可以随时中断，去执行 B， B也可能在执行过程中中断再去执行 A，结果可能是:</p>
+<pre><code>        1
+        2
+        x
+        y
+        3
+        z
+</code></pre>
+<p>但是实际上在A 中是没有调用 B 的，所以协程的调用比 函数调用理解起来要难一些。看起来A、B 的执行有点像多线程，但协程特点在于是一个线程执行的</p>
+<ul>
+<li>协程极高的执行效率，由于子程序切换不是线程切换，而是程序自身控制，因此没有线程切换的开销，和多线程相比，线程数量越多，协程优势就越明显</li>
+<li>不需要多线程的锁机制，因为只有一个线程，不存在同时写变量冲突，在协程中控制共享资源不加锁，只需判断状态即可，所以执行效率高很多</li>
+</ul>
+<p>Asyncio 是Python 3.4 引入的标准库，直接内置了对异步 IO 的支持</p>
+<pre><code>async def hello(name):
+    # 打印name和当前线程:
+    print(&quot;Hello %s! (%s)&quot; % (name, threading.current_thread))
+    # 异步调用asyncio.sleep(1):
+    await asyncio.sleep(1)
+    print(&quot;Hello %s again! (%s)&quot; % (name, threading.current_thread))
+    return name
+
+async def main():
+    L = await asyncio.gather(hello(&quot;Bob&quot;), hello(&quot;Alice&quot;))
+    print(L)
+
+asyncio.run(main())
+</code></pre>
+<p>语法糖:</p>
+<ul>
+<li>async 将一个函数变为 coroutinue 类型，然后可以将 async 函数扔到 asyncio.run() 中执行</li>
+<li>await 语法可以让我们在 async 函数中方便地调用另一个 async 函数， 这个调用看起来是 串行执行的，但实际上是由 asyncio 内部消息循环控制</li>
+<li>在一个 async 函数内部，通过 await asyncio.gather() 可并发执行若干个 async 函数</li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[《Agentic Design Patterns》]]></title>
+        <id>https://liyihan5520-wq.github.io/post/notes-for-agentic-design-patterns/</id>
+        <link href="https://liyihan5520-wq.github.io/post/notes-for-agentic-design-patterns/">
+        </link>
+        <updated>2025-11-30T05:34:54.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="第-1-章提示词链">第 1 章：提示词链</h1>
+<p>将复杂问题分解为顺序的、可管理的步骤</p>
+<pre><code>    import os     
+    from langchain_openai import ChatOpenAI 
+    from langchain_core.prompts import ChatPromptTemplate
+    from langchain_core.output_parsers import StrOutputParser  
+
+    llm = ChatOpenAI(temperature=0)
+
+    ##提示词1： 提取信息
+    prompt_extract = ChatPromptTemplate.from_template(
+        &quot;从以下文本中提取技术规格: \n\n{text_input}&quot;
+    )
+    ##提示词2:   转换为JSON
+    prompt_transform = ChatPromptTemplate.from_template(
+        &quot;将以下规格转换为 JSON 对象，使用 'cpu'、'memory' 和 'storage' 作为键: \n\n {specifications} &quot;
+    )
+    ##利用 LCEL 构建处理链
+    extraction_chain = prompt_extract | llm | StrOutputParser()
+
+    ## 完整的链将提取链的输出传递到转换提示词的 'specifications' 变量中
+    full_chain = (
+         {&quot;specifications&quot;: extraction_chain}
+         | prompt_transform
+         | llm
+         | StrOutputParser()
+    )
+    ## 运行链
+    input_text = &quot;新款笔记本型号配备 3.5GHz 八核处理器、 16GB内存 和 1TB NVMe 固态硬盘&quot;
+    ## 使用输入文本字典执行链
+    final_result = full_chain.invoke({&quot;text_input&quot;: input_text})
+
+    print(&quot;\n --- 最终 JSON 输出 ---&quot;)
+    print(final_result)
+</code></pre>
+<h3 id="上下文工程和提示词工程">上下文工程和提示词工程</h3>
+<p><img src="https://adp.xindoo.xyz/images/chapter-1/image1.png" alt="图像" loading="lazy"><br>
+<strong>上下文工程</strong>: 是在 token 生成之前系统地设计、构建和向 AI 模型提供完整信息环境的学科，这种方法认为模型输出的质量较少依赖于模型框架本身，更多地依赖于上下文丰富性.<br>
+这代表着传统提示词工程的重大演进：从单纯优化即时查询措辞，扩展到构建多层信息环境，包括</p>
+<ul>
+<li><strong>系统提示词</strong>:  定义AI 操作参数的基础指令</li>
+<li><strong>外部数据集成</strong>：
+<ol>
+<li>检索文档：AI 主动从知识库获取信息 （如提取项目技术规格）</li>
+<li>工具输出：通过 API 获取实时数据 （如查询日历确定用户空闲时间）</li>
+</ol>
+</li>
+<li><strong>隐式数据融合</strong>:  结合用户身份、交互历史和环境状态等关键信息（上下文）</li>
+</ul>
+<p><strong>核心解释</strong>:   这种结构化方法，是<em>区分基本 AI 工具与更复杂、上下文感知系统地关键</em>。 它将上下文本身视为重要组件，确保模型对用户意图、历史和当前环境有全面的理解，是将无状态聊天机器人提升为高度能干、情境感知系统地关键方法论。</p>
+<h1 id="第2章-路由">第2章： 路由</h1>
+<p>将 <strong>条件逻辑引入 Agent 操作框架</strong> 中，使其能够从固定的执行路径转变为： <em>Agent 动态评估特定标准，从一组可能得后续操作中进行选择</em>，使得 <em>系统行为更加灵活，且具有上下文感知能力</em></p>
+<pre><code>from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough, RunnableBranch
+
+def booking_handler(request: str) -&gt; str:
+    &quot;&quot;&quot;模拟预订 Agent 处理请求。&quot;&quot;&quot;
+    print(&quot;\n--- 委托给预订处理程序 ---&quot;)
+    return f&quot;预订处理程序处理了请求：'{request}'。结果：模拟预订操作。&quot;
+
+def info_handler(request: str) -&gt; str:
+    &quot;&quot;&quot;模拟信息 Agent 处理请求。&quot;&quot;&quot;
+    print(&quot;\n--- 委托给信息处理程序 ---&quot;)
+    return f&quot;信息处理程序处理了请求：'{request}'。结果：模拟信息检索。&quot;
+
+def unclear_handler(request: str) -&gt; str:
+    &quot;&quot;&quot;处理无法委托的请求。&quot;&quot;&quot;
+    print(&quot;\n--- 处理不清楚的请求 ---&quot;)
+    return f&quot;协调器无法委托请求：'{request}'。请澄清。&quot;
+
+# 定义协调器路由链，此链决定应委托给哪个处理程序
+coordinator_router_prompt = ChatPromptTemplate.from_messages([
+    (&quot;system&quot;, &quot;&quot;&quot;分析用户的请求并确定哪个专家处理程序应处理它。
+     - 如果请求与预订航班或酒店相关，
+        输出 'booker'。
+     - 对于所有其他一般信息问题，输出 'info'。
+     - 如果请求不清楚或不适合任一类别，
+        输出 'unclear'。
+     只输出一个词：'booker'、'info' 或 'unclear'。&quot;&quot;&quot;),
+    (&quot;user&quot;, &quot;{request}&quot;)
+])
+
+if llm:
+    coordinator_router_chain = coordinator_router_prompt | llm |  StrOutputParser()
+
+#  为 RunnableBranch 定义分支
+branches = { 
+    &quot;booker&quot;: RunnablePassthrough.assign(output=lambda x: booking_handler(x['request']['request'])),
+    &quot;info&quot;: RunnablePassthrough.assign(output=lambda x: info_handler(x['request']['request'])),
+    &quot;unclear&quot;: RunnablePassthrough.assign(output=lambda x: unclear_handler(x['request']['request'])),
+}
+
+## 创建 RunnableBranch， 接受路由链的输出
+delegation_branch = RunnableBranch(
+    (lambda x: x['decision'].strip() == 'booker', branches[&quot;booker&quot;]), # 添加了 .strip()
+    (lambda x: x['decision'].strip() == 'info', branches[&quot;info&quot;]),     # 添加了 .strip()
+    branches[&quot;unclear&quot;] # 'unclear' 或任何其他输出的默认分支
+)
+
+## 将路由链和委托分支组合成单个可运行对象
+coordinator_agent = {
+    &quot;decision&quot;: coordinator_router_chain,
+    &quot;request&quot;: RunnablePassthrough()
+} | delegation_branch | (lambda x: x['output']) # 提取最终输出
+
+## --- 示例用法 ---
+def main():
+    if not llm:
+        print(&quot;\n由于 LLM 初始化失败，跳过执行。&quot;)
+        return
+    
+    print(&quot;--- 运行预订请求 ---&quot;)
+    request_a = &quot;给我预订去伦敦的航班。&quot;
+    result_a = coordinator_agent.invoke({&quot;request&quot;: request_a})
+    print(f&quot;最终结果 A: {result_a}&quot;)
+    
+    print(&quot;\n--- 运行信息请求 ---&quot;)
+    request_b = &quot;意大利的首都是什么？&quot;
+    result_b = coordinator_agent.invoke({&quot;request&quot;: request_b})
+    print(f&quot;最终结果 B: {result_b}&quot;)
+    
+    print(&quot;\n--- 运行不清楚的请求 ---&quot;)
+    request_c = &quot;告诉我关于量子物理学的事。&quot;
+    result_c = coordinator_agent.invoke({&quot;request&quot;: request_c})
+    print(f&quot;最终结果 C: {result_c}&quot;)
+</code></pre>
+<h1 id="第3章-并行化">第3章  并行化</h1>
+<p>许多复杂的 Agent 任务涉及多个可同时执行而非顺序执行的子任务，并行执行允许独立任务同时运行</p>
+<pre><code>import os
+import asyncio
+from typing import Optional
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import Runnable, RunnableParallel, RunnablePassthrough
+
+ llm: Optional[ChatOpenAI] = ChatOpenAI(model=&quot;gpt-4o-mini&quot;, temperature=0.7)
+ # 定义独立链
+summarize_chain: Runnable = (
+    ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;简洁地总结以下主题：&quot;),
+        (&quot;user&quot;, &quot;{topic}&quot;)
+    ])
+    | llm
+    | StrOutputParser()
+)
+
+questions_chain: Runnable = (
+    ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;生成关于以下主题的三个有趣问题：&quot;),
+        (&quot;user&quot;, &quot;{topic}&quot;)
+    ])
+    | llm
+    | StrOutputParser()
+)
+
+terms_chain: Runnable = (
+    ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;从以下主题中识别 5-10 个关键术语，用逗号分隔：&quot;),
+        (&quot;user&quot;, &quot;{topic}&quot;)
+    ])
+    | llm
+    | StrOutputParser()
+)
+
+# 构建并行 + 综合链
+## 1.定义要并行运行的任务块
+map_chain = RunnableParallel(
+    {
+        &quot;summary&quot;: summarize_chain,
+        &quot;questions&quot;: questions_chain,
+        &quot;key_terms&quot;: terms_chain,
+        &quot;topic&quot;: RunnablePassthrough(),  # 传递原始主题
+    }
+)
+
+## 2. 定义将组合并行结果的最终综合提示词。
+synthesis_prompt = ChatPromptTemplate.from_messages([
+    (&quot;system&quot;, &quot;&quot;&quot;基于以下信息：
+    摘要：{summary}
+    相关问题：{questions}
+    关键术语：{key_terms}
+    综合一个全面的答案。&quot;&quot;&quot;),
+    (&quot;user&quot;, &quot;原始主题：{topic}&quot;)
+])
+
+## 3. 通过将并行结果直接管道化
+##    到综合提示词，然后是 LLM 和输出解析器，构建完整链。
+full_parallel_chain = map_chain | synthesis_prompt | llm | StrOutputParser()
+
+topic = &quot;太空探索历史&quot;
+response = await full_parallel_chain.ainvoke(topic)
+</code></pre>
+<blockquote>
+<p>1.通过定义三个独立的 LangChain “链”，每个链设计用于对输入主题执行不同任务<br>
+2.构建RunnableParallel 块来捆绑这三个链以实现同时执行，通过RunnalbePassthrough()  传递原始主题<br>
+3.最终综合步骤定义了单独的 ChatPromptTemplate， 接收 独立链的输出，作为输入以生成全面答案</p>
+</blockquote>
+<h1 id="第4章-反思">第4章: 反思</h1>
+<p>即使采用复杂的工作流，Agent的初始输出或计划也可能并非最优、准确或完整，通过评估Agent 自身工作、输出、自身状态并利用该评估来提升性能或优化响应。 反思模式的关键高效实现，是将流程分离为两个逻辑角色： generator 和 evaluator 产生更稳健客观的结果</p>
+<pre><code>def run_reflection_loop():
+    &quot;&quot;&quot;
+    演示多步 AI 反思循环以逐步改进 Python 函数。
+    &quot;&quot;&quot;
+    # --- 核心任务 ---
+    task_prompt = &quot;&quot;&quot;
+    你的任务是创建一个名为 `calculate_factorial` 的 Python 函数。
+    此函数应执行以下操作：
+    1. 接受单个整数 `n` 作为输入。
+    2. 计算其阶乘 (n!)。
+    3. 包含清楚解释函数功能的文档字符串。
+    4. 处理边缘情况：0 的阶乘是 1。
+    5. 处理无效输入：如果输入是负数，则引发 ValueError。
+    &quot;&quot;&quot;
+    
+    # --- 反思循环 ---
+    max_iterations = 3
+    current_code = &quot;&quot;
+    
+    # 我们将构建对话历史以在每一步中提供上下文。
+    message_history = [HumanMessage(content=task_prompt)]
+    
+    for i in range(max_iterations):
+        print(&quot;\n&quot; + &quot;=&quot;*25 + f&quot; 反思循环：迭代 {i + 1} &quot; + &quot;=&quot;*25)
+        
+        # --- 1. 生成/完善阶段 ---
+        # 在第一次迭代中，它生成。在后续迭代中，它完善。
+        if i == 0:
+            print(&quot;\n&gt;&gt;&gt; 阶段 1：生成初始代码...&quot;)
+            # 第一条消息只是任务提示词。
+            response = llm.invoke(message_history)
+            current_code = response.content
+        else:
+            print(&quot;\n&gt;&gt;&gt; 阶段 1：基于先前批评完善代码...&quot;)
+            # 消息历史现在包含任务、
+            # 最后一个代码和最后一个批评。
+            # 我们指示模型应用批评。
+            message_history.append(HumanMessage(content=&quot;请使用提供的批评完善代码。&quot;))
+            response = llm.invoke(message_history)
+            current_code = response.content
+        
+        print(&quot;\n--- 生成的代码 (v&quot; + str(i + 1) + &quot;) ---\n&quot; + current_code)
+        message_history.append(response) # 将生成的代码添加到历史记录
+        
+        # --- 2. 反思阶段 ---
+        print(&quot;\n&gt;&gt;&gt; 阶段 2：对生成的代码进行反思...&quot;)
+        # 为反思 Agent 创建特定提示词。
+        # 这要求模型充当高级代码审查员。
+        reflector_prompt = [
+            SystemMessage(content=&quot;&quot;&quot;
+                你是一名高级软件工程师和 Python 专家。
+                你的角色是执行细致的代码审查。
+                根据原始任务要求批判性地评估提供的 Python 代码。
+                查找错误、风格问题、缺失的边缘情况和改进领域。
+                如果代码完美并满足所有要求，
+                用单一短语 'CODE_IS_PERFECT' 响应。
+                否则，提供批评的项目符号列表。
+            &quot;&quot;&quot;),
+            HumanMessage(content=f&quot;原始任务：\n{task_prompt}\n\n要审查的代码：\n{current_code}&quot;)
+        ]
+        
+        critique_response = llm.invoke(reflector_prompt)
+        critique = critique_response.content
+        
+        # --- 3. 停止条件 ---
+        if &quot;CODE_IS_PERFECT&quot; in critique:
+            print(&quot;\n--- 批评 ---\n未发现进一步批评。代码令人满意。&quot;)
+            break
+        
+        print(&quot;\n--- 批评 ---\n&quot; + critique)
+        
+        # 将批评添加到历史记录以用于下一个完善循环。
+        message_history.append(HumanMessage(content=f&quot;对先前代码的批评：\n{critique}&quot;))
+</code></pre>
+<p>1.根据需求设计 循环条件、循环次数<br>
+2.构建对话历史，在每一步中提供上下文，将上一轮次的输出作为下一轮次的输入，提供上下文<br>
+3.循环持续至评审达到输出要求或达到最大迭代次数</p>
+<h1 id="第5章-工具使用">第5章 工具使用</h1>
+<p>工具使用将语言模型从文本生成器转变为能够在数字或物理世界中感知、推理和行动的 Agent<br>
+无论哪种框架，都为 llm 提供了丰富强大的 tools 使用/管理工具</p>
+<pre><code>from langchain_core.tools import tool as langchain_tool
+from langchain.agents import create_tool_calling_agent, AgentExecutor
+
+llm = ChatGoogleGenerativeAI(model=&quot;gemini-2.0-flash&quot;, temperature=0)
+
+## --- 定义工具 ---
+@langchain_tool
+def search_information(query: str) -&gt; str:
+    &quot;&quot;&quot;
+    提供有关给定主题的事实信息。使用此工具查找诸如&quot;法国首都&quot;或&quot;伦敦的天气？&quot;等短语的答案。
+    &quot;&quot;&quot;
+    print(f&quot;\n--- 🛠️ 工具调用：search_information，查询：'{query}' ---&quot;)
+    
+    # 使用预定义结果字典模拟搜索工具。
+    simulated_results = {
+        &quot;weather in london&quot;: &quot;伦敦目前多云，温度为 15°C。&quot;,
+        &quot;capital of france&quot;: &quot;法国的首都是巴黎。&quot;,
+        &quot;population of earth&quot;: &quot;地球的估计人口约为 80 亿人。&quot;,
+        &quot;tallest mountain&quot;: &quot;珠穆朗玛峰是海拔最高的山峰。&quot;,
+        &quot;default&quot;: f&quot;'{query}' 的模拟搜索结果：未找到特定信息，但该主题似乎很有趣。&quot;
+    }
+    
+    result = simulated_results.get(query.lower(), simulated_results[&quot;default&quot;])
+    print(f&quot;--- 工具结果：{result} ---&quot;)
+    return result
+
+tools = [search_information]  #定义好 tool
+
+## --- 创建工具调用 Agent ---
+if llm:
+    # 此提示词模板需要一个 `agent_scratchpad` 占位符用于 Agent 的内部步骤。
+    agent_prompt = ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;你是一个有用的助手。&quot;),
+        (&quot;human&quot;, &quot;{input}&quot;),
+        (&quot;placeholder&quot;, &quot;{agent_scratchpad}&quot;),
+    ])
+    
+    # 创建 Agent，将 LLM、工具和提示词绑定在一起。
+    agent = create_tool_calling_agent(llm, tools, agent_prompt)
+    
+    # AgentExecutor 是调用 Agent 并执行所选工具的运行时。
+    # 这里不需要 'tools' 参数，因为它们已经绑定到 Agent。
+    agent_executor = AgentExecutor(agent=agent, verbose=True, tools=tools)
+
+async def run_agent_with_tool(query: str):
+    &quot;&quot;&quot;使用查询调用 Agent 执行器并打印最终响应。&quot;&quot;&quot;
+    print(f&quot;\n--- 🏃 使用查询运行 Agent：'{query}' ---&quot;)
+    try:
+        response = await agent_executor.ainvoke({&quot;input&quot;: query})
+        print(&quot;\n--- ✅ 最终 Agent 响应 ---&quot;)
+        print(response[&quot;output&quot;])
+    except Exception as e:
+        print(f&quot;\n🛑 Agent 执行期间发生错误：{e}&quot;)
+
+async def main():
+    &quot;&quot;&quot;并发运行所有 Agent 查询。&quot;&quot;&quot;
+    tasks = [
+        run_agent_with_tool(&quot;法国的首都是什么？&quot;),
+        run_agent_with_tool(&quot;伦敦的天气怎么样？&quot;),
+        run_agent_with_tool(&quot;告诉我一些关于狗的事情。&quot;) # 应该触发默认工具响应
+    ]
+    await asyncio.gather(*tasks)
+
+nest_asyncio.apply()
+asyncio.run(main())
+</code></pre>
+<p>1.定义工具，使用 @langchain_tool 标签<br>
+2.使用 ChatPromptTemplate ，定义 Agent<br>
+3.创建 Agent   agent = create_tool_calling_agent(llm, tools, agent_prompt)，将LLM、工具、提示词绑定在一起<br>
+4.定义 AgentExecutor</p>
+<h1 id="第6章-规划">第6章： 规划</h1>
+<ul>
+<li>规划使 Agent 能够将复杂目标分解为可操作的顺序步骤</li>
+<li>其对于处理多步任务、工作流自动化和导航复杂环境及其重要</li>
+<li>LLM 可以通过基于任务描述生成逐步方法来执行规划<br>
+<img src="https://adp.xindoo.xyz/images/chapter-6/image4.png" alt="规划模式" loading="lazy"></li>
+</ul>
+<h1 id="第7章多agent-协作">第7章：多Agent 协作</h1>
+<p>多 Agent 协作模式涉及设计系统，其中多个独立或半独立的 Agent 协同工作以实现共同目标。建立一个多 Agent 系统，从根本上包括:</p>
+<ol>
+<li>Agent 角色和职责界定</li>
+<li>Agent 通过其交换信息渠道的建立</li>
+<li>指导其协作努力的任务流/交互协议</li>
+</ol>
+<p>理解Agent 交互和通信的复杂方式对于设计有效的 多Agent 系统至关重要：</p>
+<ul>
+<li>单Agent</li>
+<li>网络：其中多个 Agent 以去中心化方式直接交互，通信通常是点对点方式进行，允许共享信息、资源甚至是任务</li>
+<li>监督者：专用 Agent 监督和协调一组下属 Agent 的活动，监督者充当通信、任务分配、冲突解决的中心枢纽</li>
+<li>层次化：建立多层组织架构，此结构非常适合可分解为子问题的复杂问题，每个子问题由层次结构的特定层管理</li>
+</ul>
+<h1 id="第8章记忆管理">第8章：记忆管理</h1>
+<p>Agent 记忆通常分为两大主要类型：</p>
+<ul>
+<li>短期记忆（上下文记忆）：类似于工作记忆，保存当前处理或最近访问的信息。短期记忆主要存在于上下文窗口之中，但上下文窗口容量有限，制约了 Agent 可以直接访问的近期信息量。 高效的短期记忆管理涉及在有限空间内保留最相关信息</li>
+<li>长期记忆（持久记忆）：作为 Agent 跨交互、任务，类似于长期知识库。数据通常存储在 Agent 即时处理环境之外，常见于数据库、知识图谱或向量数据库中。</li>
+</ul>
+<p><strong>LangChain 和 LangGraph 中的记忆管理：</strong><br>
+1.ChatMessageHistory: 手动记忆管理，对于在正式链外直接简单控制对话历史</p>
+<pre><code>from langchain.memory import ChatMessageHistory
+
+## 初始化历史对象
+history = ChatMessageHistory()
+
+## 添加用户和 AI 消息
+history.add_user_message(&quot;我下周要去纽约。&quot;)
+history.add_ai_message(&quot;太好了！这是一个很棒的城市。&quot;)
+
+## 访问消息列表
+print(history.messages)
+</code></pre>
+<p>2.ConversationBufferMemory: 链自动化记忆，将记忆直接集成到链中</p>
+<pre><code>from langchain.memory import ConversationBufferMemory
+
+## 初始化内存
+memory = ConversationBufferMemory()
+
+## 保存对话轮次
+memory.save_context({&quot;input&quot;: &quot;天气怎么样？&quot;}, {&quot;output&quot;: &quot;今天是晴天。&quot;})
+
+## 将内存作为字符串加载
+print(memory.load_memory_variables({}))
+</code></pre>
+<p><strong>关键参数:</strong></p>
+<ul>
+<li>memory_key: 指定提示词中，将保存聊天历史的变量名的字符串，默认：&quot;history&quot;</li>
+<li>return_messages: 决定历史格式的布尔值，如果返回为 False，它返回单个格式化字符串[标准LLM]，如果返回 True，返回消息对象列表[聊天模型]</li>
+</ul>
+<pre><code>from langchain_openai import ChatOpenAI
+from langchain.chains import LLMChain
+from langchain.memory import ConversationBufferMemory
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+## 1. 定义聊天模型和提示词
+llm = ChatOpenAI()
+prompt = ChatPromptTemplate(
+    messages=[
+        SystemMessagePromptTemplate.from_template(&quot;你是一个友好的助手。&quot;),
+        MessagesPlaceholder(variable_name=&quot;chat_history&quot;),
+        HumanMessagePromptTemplate.from_template(&quot;{question}&quot;)
+    ]
+)
+
+## 2. 配置内存
+## return_messages=True 对于聊天模型是必不可少的
+memory = ConversationBufferMemory(memory_key=&quot;chat_history&quot;, return_messages=True)
+
+## 3. 构建链
+conversation = LLMChain(llm=llm, prompt=prompt, memory=memory)
+
+## 4. 运行对话
+response = conversation.predict(question=&quot;嗨，我是 Jane。&quot;)
+print(response)
+response = conversation.predict(question=&quot;你记得我的名字吗？&quot;)
+print(response)
+</code></pre>
+<p><strong>长期记忆:</strong> 允许系统在不同对话中保留信息，提供更深层次上下文和个性化，可分解为类似人类记忆的三种类型：</p>
+<ul>
+<li>语义记忆： 记住事实，设计保留特定事实和概念，如用户偏好或领域知识</li>
+<li>情境记忆：记住经历，涉及回忆过去事件或行动，如提示词中给出的 few-shot 样例，帮助Agent 学习正确执行任务</li>
+<li>程序记忆：记住规则，在包含系统提示中， Agent 修改自身提示适应改进<br>
+演示 Agent 如何使用反思来更新存储在 LangGraph BaseStore 中的程序记忆的伪代码</li>
+</ul>
+<pre><code>## 更新 agent 指令的节点
+def update_instructions(state: State, store: BaseStore):
+    namespace = (&quot;instructions&quot;,)
+    # 从存储中获取当前指令
+    current_instructions = store.search(namespace)[0]
+
+    # 创建提示词要求 LLM 反思对话
+    # 并生成新的、改进的指令
+    prompt = prompt_template.format(
+        instructions=current_instructions.value[&quot;instructions&quot;],
+        conversation=state[&quot;messages&quot;]
+    )
+
+    # 从 LLM 获取新指令
+    output = llm.invoke(prompt)
+    new_instructions = output['new_instructions']
+
+    # 将更新的指令保存回存储
+    store.put((&quot;agent_instructions&quot;,), &quot;agent_a&quot;, {&quot;instructions&quot;: new_instructions})
+
+## 使用指令生成响应的节点
+def call_model(state: State, store: BaseStore):
+    namespace = (&quot;agent_instructions&quot;, )
+    # 从存储中检索最新指令
+    instructions = store.get(namespace, key=&quot;agent_a&quot;)[0]
+
+    # 使用检索到的指令格式化提示词
+    prompt = prompt_template.format(instructions=instructions.value[&quot;instructions&quot;])
+    # ... 应用程序逻辑继续
+</code></pre>
+<p>LangGraph 将长期记忆存储为存储中的 JSON文档</p>
+<pre><code>from langgraph.store.memory import InMemoryStore
+
+## 真实嵌入函数的占位符
+def embed(texts: list[str]) -&gt; list[list[float]]:
+    # 在真实应用程序中，使用适当的嵌入模型
+    return [[1.0, 2.0] for _ in texts]
+
+## 初始化内存存储。对于生产，使用数据库支持的存储。
+store = InMemoryStore(index={&quot;embed&quot;: embed, &quot;dims&quot;: 2})
+
+## 为特定用户和应用程序上下文定义命名空间
+user_id = &quot;my-user&quot;
+application_context = &quot;chitchat&quot;
+namespace = (user_id, application_context)
+
+## 1. 将记忆放入存储
+store.put(
+    namespace,
+    &quot;a-memory&quot;,  # 此记忆的键
+    {
+        &quot;rules&quot;: [
+            &quot;用户喜欢简短、直接的语言&quot;,
+            &quot;用户只说英语和 python&quot;,
+        ],
+        &quot;my-key&quot;: &quot;my-value&quot;,
+    },
+)
+
+## 2. 通过其命名空间和键获取记忆
+item = store.get(namespace, &quot;a-memory&quot;)
+print(&quot;检索的项目：&quot;, item)
+
+## 3. 在命名空间内搜索记忆，按内容过滤
+## 并按与查询的向量相似度排序。
+items = store.search(
+    namespace,
+    filter={&quot;my-key&quot;: &quot;my-value&quot;},
+    query=&quot;语言偏好&quot;
+)
+print(&quot;搜索结果：&quot;, items)
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Agent 主流设计模式]]></title>
+        <id>https://liyihan5520-wq.github.io/post/agentic-design-patterns/</id>
+        <link href="https://liyihan5520-wq.github.io/post/agentic-design-patterns/">
+        </link>
+        <updated>2025-11-25T14:22:22.000Z</updated>
+        <content type="html"><![CDATA[<p>Key Components: Perception, Planning, Tooling, Memory Management, Action Selection<br>
+Key insight: Proper Agent design depends on the task</p>
+<p>目前主流的Agent设计模式包含如下：ReAct/ Plan and Solve/ Reason without Observation/ LLMCompiler/ Basic Reflection/ Reflexion / Language Agent Tree Search</p>
+<p>Google 团队推出的 《Agentic design patterns》 更加详细地阐述了从基础到高级的设计理念与实现方法  <a href="https://github.com/xindoo/agentic-design-patterns">https://github.com/xindoo/agentic-design-patterns</a></p>
+<h1 id="react-pattern">ReAct Pattern:</h1>
+<ul>
+<li>模仿人类解决问题的过程，将单轮回答拆成多轮 TAO 循环： 思考（分析、规划） -&gt; 行动(执行工具调用/环境交互) -&gt;观察(环境变化)-&gt;再思考 循环往复</li>
+<li>将 思考、行动、观察 三者解耦，得到事件驱动的，可解释、可调试、可扩展的通用 Agent 框架</li>
+</ul>
+<p>from langchain.agents import create_react_agent, AgentExecutor<br>
+from langchain_openai import ChatOpenAI<br>
+from langchain.tools import BaseTool<br>
+class Calculator(BaseTool):<br>
+name = &quot;calculator&quot;<br>
+description = &quot;eval math&quot;<br>
+def _run(self, expr: str):<br>
+return eval(expr)<br>
+llm   = ChatOpenAI(temperature=0)<br>
+tools = [Calculator()]<br>
+agent = create_react_agent(llm, tools, hub.pull(&quot;hwchase17/react&quot;))<br>
+[把「LLM + 工具集合 + ReAct 提示模板」封装成一个 可序列化的 Runnable]<br>
+executor = AgentExecutor(agent=agent, tools=tools, verbose=True)<br>
+[实现 TAO 循环调度器（Thought-Action-Observation）]</p>
+<p><strong>优点</strong>： 动态适应性强，能实时根据环境观察灵活调整行动计划，其推理轨迹使得整个决策过程高度可解释，有利于开发者调试，增强用户信任度<br>
+<strong>缺点</strong>：每次工具调用都需要进行一次LLM 推理，执行速度慢，token 消耗高，上下文难以管理，“走一步看一步”可能陷入局部最优<br>
+<strong>适用场景</strong>：适合需要与外部环境进行持续交互的场景</p>
+<h1 id="plan-execute">Plan &amp; Execute</h1>
+<ul>
+<li>将Agent 的工作流明确地分为两个独立阶段，一个由功能强大的LLM 负责“规划”阶段，和一个更轻量级或特定模型负责“执行”阶段，在规划阶段由功能强大的 LLM 一次性生成一个详细的、多步骤的静态计划，执行器根据计划逐步完成</li>
+<li>牺牲React 的实时适应性，换来更高的执行效率和更低的运营成本。这种设计模式通过将 &quot;智慧（规划）&quot; 与“体力（执行）”解耦</li>
+</ul>
+<p><strong>优点</strong>： token 花费少，强制任务开始时进行全局思考，有助于避免ReAct 可能出现的局部最优问题<br>
+<strong>缺点</strong>：鲁棒性差，计划是静态的，无法在执行过程中应对突发状况或错误<br>
+<strong>适用场景</strong>：适用流程相对固定，但步骤繁多，需要调用多种工具的复杂任务</p>
+<h1 id="reason-without-observation">Reason without Observation</h1>
+<ul>
+<li>ReWOO, 无观察推理 Plan &amp; Execute 架构的高效变体，其核心理念在于， planner 一次性生成一个完整的、包含变量站位符的计划，如 #E1 = Tool[argument] 代表工具调用的输出，可以在后续步骤中直接引用，从而实现数据的高效传递</li>
+<li>将编译原理中的“变量” 概念引入自然语言计划，实现更高效的数据流编排</li>
+</ul>
+<p><strong>优点</strong>：通过一次性规划整个任务链，避免了ReAct 中反复调用 LLM 所产生的冗余提示词和上下文，显著减少了 token 消耗<br>
+<strong>缺点</strong>:  尽管引入了变量，其任务执行本质上仍是串行的，无法充分利用可以并行的任务，与 Plan &amp; Execute 类似<br>
+<strong>使用场景</strong>:  适合需要链式调用工具来获取信息，且工具之间需要传递数据</p>
+<h1 id="llm-compiler">LLM Compiler</h1>
+<ul>
+<li>让Planner 生成一个有向无环图（DAG），而非简单的列表，这个任务图清晰定义了所有任务、所需工具，以及任务间的依赖关系，独立的任务调度单元会根据这个 DAG 自动执行满足依赖的任务，从而实现最大化的并发执行，提供显著的速度提升</li>
+</ul>
+<p><strong>优点</strong>：能够实现极高的执行效率，节约成本，减少总体执行时间，任务图的输出便于理解和调试，提高了可解释性<br>
+<strong>缺点</strong>：工程实现难度高，需要构建复杂的任务调度单元和依赖管理系统。单点中断可能导致整个流程失败<br>
+<strong>适用场景</strong>：需要同时获取多项信息或调用多个 API 完成任务的场景</p>
+<h1 id="basic-reflection">Basic Reflection</h1>
+<ul>
+<li>明确将 “反思”，作为Agent 工作流中的一个步骤，使模型能够思考其自身思考过程，并根据内在逻辑进行自我纠正</li>
+</ul>
+<p><strong>优点</strong>：即使简单的反思循环，能够在创造性/逻辑性任务中带来显著的性能提升，这种方法可以帮助LLM 减少输出中的偏见，提升安全性和<br>
+<strong>缺点</strong>：缺少外部反馈，单纯让另一个模型去“挑刺”， Agent 可能会陷入低效的自我循环中，无法找到正确的解决方案<br>
+<strong>适用场景</strong>: 需要迭代优化的创作或编程任务</p>
+<h1 id="reflexion">Reflexion</h1>
+<ul>
+<li>引入评估器 evaluator 判断当前轨迹成功与否，由reflector 生成文本化反思，这段反思被“动态记忆”储存起来，并在下一次尝试中作用于上下文，指导Agent 避免重复过去错误</li>
+</ul>
+<p><strong>优点</strong>：其记忆是显示的反思文本，Agent 的“学习”过程透明可追踪，提供了更高的可解释性<br>
+<strong>缺点</strong>：高度依赖于 LLM 能否准确评估自己的表现，并生成有用的反思，引入了记忆，同时也是对上下文管理的考验<br>
+<strong>适用场景</strong>: 需要从失败中汲取教训以找到解决方案的复杂任务（强化学习/元学习）</p>
+<h1 id="language-agent-tree-search">Language Agent Tree Search</h1>
+<ul>
+<li>将语言模型的推理能力与经典的“蒙特卡洛树搜索”算法结合，创造出一个能够探索多条可能路径并进行深度决策的框架。</li>
+<li>将LLM 作为 价值函数和优化器，通过树状搜索同时探索多个 React 序列，并利用反思和外部反馈来评估和回溯最优路径</li>
+</ul>
+<p><strong>优点</strong>: 能够在复杂的决策空间进行深度探索，避免单一路径的失败。该框架在多种任务上均表现出优越性能，是一种综合可靠的强大框架<br>
+<strong>缺点</strong> 为了保证效果，往往需要大量的 LLM 调用<br>
+<strong>适用场景</strong>： 适合需要深度探索和权衡多种可能性的复杂决策任务</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Prompt Engineerning]]></title>
+        <id>https://liyihan5520-wq.github.io/post/prompt-engineerning/</id>
+        <link href="https://liyihan5520-wq.github.io/post/prompt-engineerning/">
+        </link>
+        <updated>2025-11-24T12:03:19.000Z</updated>
+        <content type="html"><![CDATA[<p>定义 Agent 功能的 System Prompt，用于设定 llm 整体行为，帮助模型了解用户需求，对于 Agent 能力表现至关重要，在此系统学习一下 Prompt Engineerning 相关技术</p>
+<h1 id="1-chain-of-thoughts">1. chain of thoughts</h1>
+<blockquote>
+<p>鼓励大模型解释其推理过程，把一个多步推理问题分解成很多中间步骤，分配给更多计算量，生成更多的token，在将答案拼接在一起求解</p>
+</blockquote>
+<ul>
+<li>zero-shot-CoT:     通常在问题结尾附加 &quot;Let's think step by step&quot;</li>
+<li>self-consistency:   生成多个思路链，然后取多数答案作为最终答案</li>
+<li>knowledge-generation prompt:  先引导模型生成问题相关知识，再将知识拼接到 prompt 中</li>
+<li>prompt chaining:  将问题分解为多个子问题，根据子任务创建一系列提示操作</li>
+<li>ToT:  思维树，能够自己对严谨推理过程的中间思维进行评估</li>
+</ul>
+<blockquote>
+<p>假设三位不同的专家来回答这个问题。所有专家都写下他们思考这个问题的第一个步骤，然后与大家分享。<br>
+然后，所有专家都写下他们思考的下一个步骤并分享。以此类推，直到所有专家写完他们思考的所有步骤。.只要大家发现有专家的步骤出错了，就让这位专家离开。<br>
+请问...</p>
+</blockquote>
+<h1 id="2-self-refine">2. Self-Refine</h1>
+<blockquote>
+<p>考虑到LLM 第一次生成结果可能不是最好的输出，提出一种包括反馈(feedback) 和 改善(refinement)两个步骤的迭代方案，来改进LLM的初始输出</p>
+</blockquote>
+<h1 id="3-reflection">3. Reflection</h1>
+<blockquote>
+<p>引入反思机制，有助于帮助智能体快速从之前的错误中学习</p>
+</blockquote>
+<ul>
+<li>参与者（Actor）：根据状态观测量生成文本和动作。参与者在环境中采取行动并接受观察结果，从而形成轨迹。</li>
+<li>评估者（Evaluator）：对参与者的输出进行评价。具体来说，它将生成的轨迹（也被称作短期记忆）作为输入并输出奖励分数。</li>
+<li>自我反思（Self-Reflection）：生成语言强化线索来帮助参与者实现自我完善。这个角色由大语言模型承担，能够为未来的试验提供宝贵的反馈。自我反思模型利用奖励信号、当前轨迹和其持久记忆生成具体且相关的反馈，并存储在记忆组件中。智能体利用这些经验（存储在长期记忆中）来快速改进决策</li>
+</ul>
+<h1 id="4-react">4. ReAct</h1>
+<blockquote>
+<p>引导模型将复杂问题进行拆解，一步一步地进行推理 (Reasoning) 和行动 (Action)，同时还引入了观察 (Observation) 环节，在每次执行(Action) 之后，都会先观察(Observation) 当前现状，然后进行下一步推理(Reason)</p>
+</blockquote>
+<ul>
+<li>思维链 (Chain of Thought): 将一个大的复杂任务进行拆解，拆解成多个思维步骤</li>
+<li>推理(Reasoning): 负责分析和处理输入的数据，生成有效的决策</li>
+<li>行动(Action): 执行具体操作</li>
+<li>观察(Observation): 监控和收集环境反馈数据，为下一步推理和行动提供依</li>
+</ul>
+<h1 id="2个准则">2个准则：</h1>
+<ul>
+<li>好的 prompt 不是一次调整好的</li>
+<li>关于评判提示词好/坏, 最好有一个准则</li>
+</ul>
+<p>9个要点：</p>
+<ol>
+<li>让模型帮你生成 (Prompt generator)</li>
+<li>写得尽可能清晰 (Be clear and direct)</li>
+<li>给模型更多的例子 (Use examples)   zero-shot / one-shot / few-shot</li>
+<li>给模型的思考空间 (Let Claude think (chain of thought))  [think it step by step]</li>
+<li>使用XML标签      (Use XML tags)  [针对容易让模型带有缩进混乱的东西]</li>
+<li>给模型角色       (Give Claude a role)</li>
+<li>让模型直接补全    (Prefill Claude's response)   [让模型直接补全]</li>
+<li>思维链式 prompt  (workflow: prompt1 -&gt; step1, prompt2 -&gt; step2, ...)</li>
+</ol>
+<h1 id="context-engineering"><strong>Context Engineering</strong></h1>
+<blockquote>
+<p>在Multi-agennt 或者多步任务中，中间过程会产生大量上下文信息，但这些上下文信息较为繁杂冗余，如果每次都将上下文“一股脑”打包到 prompt 中输入给LLM 十分占用 token 且可能混淆关键信息，上下文工程，如何通过一套程序化的规则，来自动管理和修改“上下文”， 确保 Agent 在 自主行动中始终符合用户的最初要求[Goal]</p>
+</blockquote>
+<ul>
+<li>notebooker:  引入新的 tool/agent ，仅保存上下文中的关键信息，不再“一股脑”的将中间信息全部拼接起来【一般将笔记拼接到“首/尾”（相对于transformer 架构更加显眼）】</li>
+<li>优化上下文长度</li>
+<li>引入RAG，将上下文信息存入到向量数据库中</li>
+</ul>
+]]></content>
+    </entry>
+</feed>

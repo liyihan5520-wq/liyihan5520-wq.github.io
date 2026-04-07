@@ -1,0 +1,705 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>《Agentic Design Patterns》 | YH&#39;s Blog</title>
+<link rel="shortcut icon" href="https://liyihan5520-wq.github.io//favicon.ico?v=1775549127679">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://liyihan5520-wq.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="《Agentic Design Patterns》 | YH&#39;s Blog - Atom Feed" href="https://liyihan5520-wq.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="第 1 章：提示词链
+将复杂问题分解为顺序的、可管理的步骤
+    import os     
+    from langchain_openai import ChatOpenAI 
+    from langchain_core.pr..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://liyihan5520-wq.github.io/">
+  <img class="avatar" src="https://liyihan5520-wq.github.io//images/avatar.png?v=1775549127679" alt="">
+  </a>
+  <h1 class="site-title">
+    YH&#39;s Blog
+  </h1>
+  <p class="site-description">
+    A junior programmer, focusing on Agent and LLM.     Keep learning and sharing knowledge of  AI
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              《Agentic Design Patterns》
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-11-30
+              </span>
+              <span>
+                20 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h1 id="第-1-章提示词链">第 1 章：提示词链</h1>
+<p>将复杂问题分解为顺序的、可管理的步骤</p>
+<pre><code>    import os     
+    from langchain_openai import ChatOpenAI 
+    from langchain_core.prompts import ChatPromptTemplate
+    from langchain_core.output_parsers import StrOutputParser  
+
+    llm = ChatOpenAI(temperature=0)
+
+    ##提示词1： 提取信息
+    prompt_extract = ChatPromptTemplate.from_template(
+        &quot;从以下文本中提取技术规格: \n\n{text_input}&quot;
+    )
+    ##提示词2:   转换为JSON
+    prompt_transform = ChatPromptTemplate.from_template(
+        &quot;将以下规格转换为 JSON 对象，使用 'cpu'、'memory' 和 'storage' 作为键: \n\n {specifications} &quot;
+    )
+    ##利用 LCEL 构建处理链
+    extraction_chain = prompt_extract | llm | StrOutputParser()
+
+    ## 完整的链将提取链的输出传递到转换提示词的 'specifications' 变量中
+    full_chain = (
+         {&quot;specifications&quot;: extraction_chain}
+         | prompt_transform
+         | llm
+         | StrOutputParser()
+    )
+    ## 运行链
+    input_text = &quot;新款笔记本型号配备 3.5GHz 八核处理器、 16GB内存 和 1TB NVMe 固态硬盘&quot;
+    ## 使用输入文本字典执行链
+    final_result = full_chain.invoke({&quot;text_input&quot;: input_text})
+
+    print(&quot;\n --- 最终 JSON 输出 ---&quot;)
+    print(final_result)
+</code></pre>
+<h3 id="上下文工程和提示词工程">上下文工程和提示词工程</h3>
+<p><img src="https://adp.xindoo.xyz/images/chapter-1/image1.png" alt="图像" loading="lazy"><br>
+<strong>上下文工程</strong>: 是在 token 生成之前系统地设计、构建和向 AI 模型提供完整信息环境的学科，这种方法认为模型输出的质量较少依赖于模型框架本身，更多地依赖于上下文丰富性.<br>
+这代表着传统提示词工程的重大演进：从单纯优化即时查询措辞，扩展到构建多层信息环境，包括</p>
+<ul>
+<li><strong>系统提示词</strong>:  定义AI 操作参数的基础指令</li>
+<li><strong>外部数据集成</strong>：
+<ol>
+<li>检索文档：AI 主动从知识库获取信息 （如提取项目技术规格）</li>
+<li>工具输出：通过 API 获取实时数据 （如查询日历确定用户空闲时间）</li>
+</ol>
+</li>
+<li><strong>隐式数据融合</strong>:  结合用户身份、交互历史和环境状态等关键信息（上下文）</li>
+</ul>
+<p><strong>核心解释</strong>:   这种结构化方法，是<em>区分基本 AI 工具与更复杂、上下文感知系统地关键</em>。 它将上下文本身视为重要组件，确保模型对用户意图、历史和当前环境有全面的理解，是将无状态聊天机器人提升为高度能干、情境感知系统地关键方法论。</p>
+<h1 id="第2章-路由">第2章： 路由</h1>
+<p>将 <strong>条件逻辑引入 Agent 操作框架</strong> 中，使其能够从固定的执行路径转变为： <em>Agent 动态评估特定标准，从一组可能得后续操作中进行选择</em>，使得 <em>系统行为更加灵活，且具有上下文感知能力</em></p>
+<pre><code>from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough, RunnableBranch
+
+def booking_handler(request: str) -&gt; str:
+    &quot;&quot;&quot;模拟预订 Agent 处理请求。&quot;&quot;&quot;
+    print(&quot;\n--- 委托给预订处理程序 ---&quot;)
+    return f&quot;预订处理程序处理了请求：'{request}'。结果：模拟预订操作。&quot;
+
+def info_handler(request: str) -&gt; str:
+    &quot;&quot;&quot;模拟信息 Agent 处理请求。&quot;&quot;&quot;
+    print(&quot;\n--- 委托给信息处理程序 ---&quot;)
+    return f&quot;信息处理程序处理了请求：'{request}'。结果：模拟信息检索。&quot;
+
+def unclear_handler(request: str) -&gt; str:
+    &quot;&quot;&quot;处理无法委托的请求。&quot;&quot;&quot;
+    print(&quot;\n--- 处理不清楚的请求 ---&quot;)
+    return f&quot;协调器无法委托请求：'{request}'。请澄清。&quot;
+
+# 定义协调器路由链，此链决定应委托给哪个处理程序
+coordinator_router_prompt = ChatPromptTemplate.from_messages([
+    (&quot;system&quot;, &quot;&quot;&quot;分析用户的请求并确定哪个专家处理程序应处理它。
+     - 如果请求与预订航班或酒店相关，
+        输出 'booker'。
+     - 对于所有其他一般信息问题，输出 'info'。
+     - 如果请求不清楚或不适合任一类别，
+        输出 'unclear'。
+     只输出一个词：'booker'、'info' 或 'unclear'。&quot;&quot;&quot;),
+    (&quot;user&quot;, &quot;{request}&quot;)
+])
+
+if llm:
+    coordinator_router_chain = coordinator_router_prompt | llm |  StrOutputParser()
+
+#  为 RunnableBranch 定义分支
+branches = { 
+    &quot;booker&quot;: RunnablePassthrough.assign(output=lambda x: booking_handler(x['request']['request'])),
+    &quot;info&quot;: RunnablePassthrough.assign(output=lambda x: info_handler(x['request']['request'])),
+    &quot;unclear&quot;: RunnablePassthrough.assign(output=lambda x: unclear_handler(x['request']['request'])),
+}
+
+## 创建 RunnableBranch， 接受路由链的输出
+delegation_branch = RunnableBranch(
+    (lambda x: x['decision'].strip() == 'booker', branches[&quot;booker&quot;]), # 添加了 .strip()
+    (lambda x: x['decision'].strip() == 'info', branches[&quot;info&quot;]),     # 添加了 .strip()
+    branches[&quot;unclear&quot;] # 'unclear' 或任何其他输出的默认分支
+)
+
+## 将路由链和委托分支组合成单个可运行对象
+coordinator_agent = {
+    &quot;decision&quot;: coordinator_router_chain,
+    &quot;request&quot;: RunnablePassthrough()
+} | delegation_branch | (lambda x: x['output']) # 提取最终输出
+
+## --- 示例用法 ---
+def main():
+    if not llm:
+        print(&quot;\n由于 LLM 初始化失败，跳过执行。&quot;)
+        return
+    
+    print(&quot;--- 运行预订请求 ---&quot;)
+    request_a = &quot;给我预订去伦敦的航班。&quot;
+    result_a = coordinator_agent.invoke({&quot;request&quot;: request_a})
+    print(f&quot;最终结果 A: {result_a}&quot;)
+    
+    print(&quot;\n--- 运行信息请求 ---&quot;)
+    request_b = &quot;意大利的首都是什么？&quot;
+    result_b = coordinator_agent.invoke({&quot;request&quot;: request_b})
+    print(f&quot;最终结果 B: {result_b}&quot;)
+    
+    print(&quot;\n--- 运行不清楚的请求 ---&quot;)
+    request_c = &quot;告诉我关于量子物理学的事。&quot;
+    result_c = coordinator_agent.invoke({&quot;request&quot;: request_c})
+    print(f&quot;最终结果 C: {result_c}&quot;)
+</code></pre>
+<h1 id="第3章-并行化">第3章  并行化</h1>
+<p>许多复杂的 Agent 任务涉及多个可同时执行而非顺序执行的子任务，并行执行允许独立任务同时运行</p>
+<pre><code>import os
+import asyncio
+from typing import Optional
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import Runnable, RunnableParallel, RunnablePassthrough
+
+ llm: Optional[ChatOpenAI] = ChatOpenAI(model=&quot;gpt-4o-mini&quot;, temperature=0.7)
+ # 定义独立链
+summarize_chain: Runnable = (
+    ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;简洁地总结以下主题：&quot;),
+        (&quot;user&quot;, &quot;{topic}&quot;)
+    ])
+    | llm
+    | StrOutputParser()
+)
+
+questions_chain: Runnable = (
+    ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;生成关于以下主题的三个有趣问题：&quot;),
+        (&quot;user&quot;, &quot;{topic}&quot;)
+    ])
+    | llm
+    | StrOutputParser()
+)
+
+terms_chain: Runnable = (
+    ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;从以下主题中识别 5-10 个关键术语，用逗号分隔：&quot;),
+        (&quot;user&quot;, &quot;{topic}&quot;)
+    ])
+    | llm
+    | StrOutputParser()
+)
+
+# 构建并行 + 综合链
+## 1.定义要并行运行的任务块
+map_chain = RunnableParallel(
+    {
+        &quot;summary&quot;: summarize_chain,
+        &quot;questions&quot;: questions_chain,
+        &quot;key_terms&quot;: terms_chain,
+        &quot;topic&quot;: RunnablePassthrough(),  # 传递原始主题
+    }
+)
+
+## 2. 定义将组合并行结果的最终综合提示词。
+synthesis_prompt = ChatPromptTemplate.from_messages([
+    (&quot;system&quot;, &quot;&quot;&quot;基于以下信息：
+    摘要：{summary}
+    相关问题：{questions}
+    关键术语：{key_terms}
+    综合一个全面的答案。&quot;&quot;&quot;),
+    (&quot;user&quot;, &quot;原始主题：{topic}&quot;)
+])
+
+## 3. 通过将并行结果直接管道化
+##    到综合提示词，然后是 LLM 和输出解析器，构建完整链。
+full_parallel_chain = map_chain | synthesis_prompt | llm | StrOutputParser()
+
+topic = &quot;太空探索历史&quot;
+response = await full_parallel_chain.ainvoke(topic)
+</code></pre>
+<blockquote>
+<p>1.通过定义三个独立的 LangChain “链”，每个链设计用于对输入主题执行不同任务<br>
+2.构建RunnableParallel 块来捆绑这三个链以实现同时执行，通过RunnalbePassthrough()  传递原始主题<br>
+3.最终综合步骤定义了单独的 ChatPromptTemplate， 接收 独立链的输出，作为输入以生成全面答案</p>
+</blockquote>
+<h1 id="第4章-反思">第4章: 反思</h1>
+<p>即使采用复杂的工作流，Agent的初始输出或计划也可能并非最优、准确或完整，通过评估Agent 自身工作、输出、自身状态并利用该评估来提升性能或优化响应。 反思模式的关键高效实现，是将流程分离为两个逻辑角色： generator 和 evaluator 产生更稳健客观的结果</p>
+<pre><code>def run_reflection_loop():
+    &quot;&quot;&quot;
+    演示多步 AI 反思循环以逐步改进 Python 函数。
+    &quot;&quot;&quot;
+    # --- 核心任务 ---
+    task_prompt = &quot;&quot;&quot;
+    你的任务是创建一个名为 `calculate_factorial` 的 Python 函数。
+    此函数应执行以下操作：
+    1. 接受单个整数 `n` 作为输入。
+    2. 计算其阶乘 (n!)。
+    3. 包含清楚解释函数功能的文档字符串。
+    4. 处理边缘情况：0 的阶乘是 1。
+    5. 处理无效输入：如果输入是负数，则引发 ValueError。
+    &quot;&quot;&quot;
+    
+    # --- 反思循环 ---
+    max_iterations = 3
+    current_code = &quot;&quot;
+    
+    # 我们将构建对话历史以在每一步中提供上下文。
+    message_history = [HumanMessage(content=task_prompt)]
+    
+    for i in range(max_iterations):
+        print(&quot;\n&quot; + &quot;=&quot;*25 + f&quot; 反思循环：迭代 {i + 1} &quot; + &quot;=&quot;*25)
+        
+        # --- 1. 生成/完善阶段 ---
+        # 在第一次迭代中，它生成。在后续迭代中，它完善。
+        if i == 0:
+            print(&quot;\n&gt;&gt;&gt; 阶段 1：生成初始代码...&quot;)
+            # 第一条消息只是任务提示词。
+            response = llm.invoke(message_history)
+            current_code = response.content
+        else:
+            print(&quot;\n&gt;&gt;&gt; 阶段 1：基于先前批评完善代码...&quot;)
+            # 消息历史现在包含任务、
+            # 最后一个代码和最后一个批评。
+            # 我们指示模型应用批评。
+            message_history.append(HumanMessage(content=&quot;请使用提供的批评完善代码。&quot;))
+            response = llm.invoke(message_history)
+            current_code = response.content
+        
+        print(&quot;\n--- 生成的代码 (v&quot; + str(i + 1) + &quot;) ---\n&quot; + current_code)
+        message_history.append(response) # 将生成的代码添加到历史记录
+        
+        # --- 2. 反思阶段 ---
+        print(&quot;\n&gt;&gt;&gt; 阶段 2：对生成的代码进行反思...&quot;)
+        # 为反思 Agent 创建特定提示词。
+        # 这要求模型充当高级代码审查员。
+        reflector_prompt = [
+            SystemMessage(content=&quot;&quot;&quot;
+                你是一名高级软件工程师和 Python 专家。
+                你的角色是执行细致的代码审查。
+                根据原始任务要求批判性地评估提供的 Python 代码。
+                查找错误、风格问题、缺失的边缘情况和改进领域。
+                如果代码完美并满足所有要求，
+                用单一短语 'CODE_IS_PERFECT' 响应。
+                否则，提供批评的项目符号列表。
+            &quot;&quot;&quot;),
+            HumanMessage(content=f&quot;原始任务：\n{task_prompt}\n\n要审查的代码：\n{current_code}&quot;)
+        ]
+        
+        critique_response = llm.invoke(reflector_prompt)
+        critique = critique_response.content
+        
+        # --- 3. 停止条件 ---
+        if &quot;CODE_IS_PERFECT&quot; in critique:
+            print(&quot;\n--- 批评 ---\n未发现进一步批评。代码令人满意。&quot;)
+            break
+        
+        print(&quot;\n--- 批评 ---\n&quot; + critique)
+        
+        # 将批评添加到历史记录以用于下一个完善循环。
+        message_history.append(HumanMessage(content=f&quot;对先前代码的批评：\n{critique}&quot;))
+</code></pre>
+<p>1.根据需求设计 循环条件、循环次数<br>
+2.构建对话历史，在每一步中提供上下文，将上一轮次的输出作为下一轮次的输入，提供上下文<br>
+3.循环持续至评审达到输出要求或达到最大迭代次数</p>
+<h1 id="第5章-工具使用">第5章 工具使用</h1>
+<p>工具使用将语言模型从文本生成器转变为能够在数字或物理世界中感知、推理和行动的 Agent<br>
+无论哪种框架，都为 llm 提供了丰富强大的 tools 使用/管理工具</p>
+<pre><code>from langchain_core.tools import tool as langchain_tool
+from langchain.agents import create_tool_calling_agent, AgentExecutor
+
+llm = ChatGoogleGenerativeAI(model=&quot;gemini-2.0-flash&quot;, temperature=0)
+
+## --- 定义工具 ---
+@langchain_tool
+def search_information(query: str) -&gt; str:
+    &quot;&quot;&quot;
+    提供有关给定主题的事实信息。使用此工具查找诸如&quot;法国首都&quot;或&quot;伦敦的天气？&quot;等短语的答案。
+    &quot;&quot;&quot;
+    print(f&quot;\n--- 🛠️ 工具调用：search_information，查询：'{query}' ---&quot;)
+    
+    # 使用预定义结果字典模拟搜索工具。
+    simulated_results = {
+        &quot;weather in london&quot;: &quot;伦敦目前多云，温度为 15°C。&quot;,
+        &quot;capital of france&quot;: &quot;法国的首都是巴黎。&quot;,
+        &quot;population of earth&quot;: &quot;地球的估计人口约为 80 亿人。&quot;,
+        &quot;tallest mountain&quot;: &quot;珠穆朗玛峰是海拔最高的山峰。&quot;,
+        &quot;default&quot;: f&quot;'{query}' 的模拟搜索结果：未找到特定信息，但该主题似乎很有趣。&quot;
+    }
+    
+    result = simulated_results.get(query.lower(), simulated_results[&quot;default&quot;])
+    print(f&quot;--- 工具结果：{result} ---&quot;)
+    return result
+
+tools = [search_information]  #定义好 tool
+
+## --- 创建工具调用 Agent ---
+if llm:
+    # 此提示词模板需要一个 `agent_scratchpad` 占位符用于 Agent 的内部步骤。
+    agent_prompt = ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;你是一个有用的助手。&quot;),
+        (&quot;human&quot;, &quot;{input}&quot;),
+        (&quot;placeholder&quot;, &quot;{agent_scratchpad}&quot;),
+    ])
+    
+    # 创建 Agent，将 LLM、工具和提示词绑定在一起。
+    agent = create_tool_calling_agent(llm, tools, agent_prompt)
+    
+    # AgentExecutor 是调用 Agent 并执行所选工具的运行时。
+    # 这里不需要 'tools' 参数，因为它们已经绑定到 Agent。
+    agent_executor = AgentExecutor(agent=agent, verbose=True, tools=tools)
+
+async def run_agent_with_tool(query: str):
+    &quot;&quot;&quot;使用查询调用 Agent 执行器并打印最终响应。&quot;&quot;&quot;
+    print(f&quot;\n--- 🏃 使用查询运行 Agent：'{query}' ---&quot;)
+    try:
+        response = await agent_executor.ainvoke({&quot;input&quot;: query})
+        print(&quot;\n--- ✅ 最终 Agent 响应 ---&quot;)
+        print(response[&quot;output&quot;])
+    except Exception as e:
+        print(f&quot;\n🛑 Agent 执行期间发生错误：{e}&quot;)
+
+async def main():
+    &quot;&quot;&quot;并发运行所有 Agent 查询。&quot;&quot;&quot;
+    tasks = [
+        run_agent_with_tool(&quot;法国的首都是什么？&quot;),
+        run_agent_with_tool(&quot;伦敦的天气怎么样？&quot;),
+        run_agent_with_tool(&quot;告诉我一些关于狗的事情。&quot;) # 应该触发默认工具响应
+    ]
+    await asyncio.gather(*tasks)
+
+nest_asyncio.apply()
+asyncio.run(main())
+</code></pre>
+<p>1.定义工具，使用 @langchain_tool 标签<br>
+2.使用 ChatPromptTemplate ，定义 Agent<br>
+3.创建 Agent   agent = create_tool_calling_agent(llm, tools, agent_prompt)，将LLM、工具、提示词绑定在一起<br>
+4.定义 AgentExecutor</p>
+<h1 id="第6章-规划">第6章： 规划</h1>
+<ul>
+<li>规划使 Agent 能够将复杂目标分解为可操作的顺序步骤</li>
+<li>其对于处理多步任务、工作流自动化和导航复杂环境及其重要</li>
+<li>LLM 可以通过基于任务描述生成逐步方法来执行规划<br>
+<img src="https://adp.xindoo.xyz/images/chapter-6/image4.png" alt="规划模式" loading="lazy"></li>
+</ul>
+<h1 id="第7章多agent-协作">第7章：多Agent 协作</h1>
+<p>多 Agent 协作模式涉及设计系统，其中多个独立或半独立的 Agent 协同工作以实现共同目标。建立一个多 Agent 系统，从根本上包括:</p>
+<ol>
+<li>Agent 角色和职责界定</li>
+<li>Agent 通过其交换信息渠道的建立</li>
+<li>指导其协作努力的任务流/交互协议</li>
+</ol>
+<p>理解Agent 交互和通信的复杂方式对于设计有效的 多Agent 系统至关重要：</p>
+<ul>
+<li>单Agent</li>
+<li>网络：其中多个 Agent 以去中心化方式直接交互，通信通常是点对点方式进行，允许共享信息、资源甚至是任务</li>
+<li>监督者：专用 Agent 监督和协调一组下属 Agent 的活动，监督者充当通信、任务分配、冲突解决的中心枢纽</li>
+<li>层次化：建立多层组织架构，此结构非常适合可分解为子问题的复杂问题，每个子问题由层次结构的特定层管理</li>
+</ul>
+<h1 id="第8章记忆管理">第8章：记忆管理</h1>
+<p>Agent 记忆通常分为两大主要类型：</p>
+<ul>
+<li>短期记忆（上下文记忆）：类似于工作记忆，保存当前处理或最近访问的信息。短期记忆主要存在于上下文窗口之中，但上下文窗口容量有限，制约了 Agent 可以直接访问的近期信息量。 高效的短期记忆管理涉及在有限空间内保留最相关信息</li>
+<li>长期记忆（持久记忆）：作为 Agent 跨交互、任务，类似于长期知识库。数据通常存储在 Agent 即时处理环境之外，常见于数据库、知识图谱或向量数据库中。</li>
+</ul>
+<p><strong>LangChain 和 LangGraph 中的记忆管理：</strong><br>
+1.ChatMessageHistory: 手动记忆管理，对于在正式链外直接简单控制对话历史</p>
+<pre><code>from langchain.memory import ChatMessageHistory
+
+## 初始化历史对象
+history = ChatMessageHistory()
+
+## 添加用户和 AI 消息
+history.add_user_message(&quot;我下周要去纽约。&quot;)
+history.add_ai_message(&quot;太好了！这是一个很棒的城市。&quot;)
+
+## 访问消息列表
+print(history.messages)
+</code></pre>
+<p>2.ConversationBufferMemory: 链自动化记忆，将记忆直接集成到链中</p>
+<pre><code>from langchain.memory import ConversationBufferMemory
+
+## 初始化内存
+memory = ConversationBufferMemory()
+
+## 保存对话轮次
+memory.save_context({&quot;input&quot;: &quot;天气怎么样？&quot;}, {&quot;output&quot;: &quot;今天是晴天。&quot;})
+
+## 将内存作为字符串加载
+print(memory.load_memory_variables({}))
+</code></pre>
+<p><strong>关键参数:</strong></p>
+<ul>
+<li>memory_key: 指定提示词中，将保存聊天历史的变量名的字符串，默认：&quot;history&quot;</li>
+<li>return_messages: 决定历史格式的布尔值，如果返回为 False，它返回单个格式化字符串[标准LLM]，如果返回 True，返回消息对象列表[聊天模型]</li>
+</ul>
+<pre><code>from langchain_openai import ChatOpenAI
+from langchain.chains import LLMChain
+from langchain.memory import ConversationBufferMemory
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+## 1. 定义聊天模型和提示词
+llm = ChatOpenAI()
+prompt = ChatPromptTemplate(
+    messages=[
+        SystemMessagePromptTemplate.from_template(&quot;你是一个友好的助手。&quot;),
+        MessagesPlaceholder(variable_name=&quot;chat_history&quot;),
+        HumanMessagePromptTemplate.from_template(&quot;{question}&quot;)
+    ]
+)
+
+## 2. 配置内存
+## return_messages=True 对于聊天模型是必不可少的
+memory = ConversationBufferMemory(memory_key=&quot;chat_history&quot;, return_messages=True)
+
+## 3. 构建链
+conversation = LLMChain(llm=llm, prompt=prompt, memory=memory)
+
+## 4. 运行对话
+response = conversation.predict(question=&quot;嗨，我是 Jane。&quot;)
+print(response)
+response = conversation.predict(question=&quot;你记得我的名字吗？&quot;)
+print(response)
+</code></pre>
+<p><strong>长期记忆:</strong> 允许系统在不同对话中保留信息，提供更深层次上下文和个性化，可分解为类似人类记忆的三种类型：</p>
+<ul>
+<li>语义记忆： 记住事实，设计保留特定事实和概念，如用户偏好或领域知识</li>
+<li>情境记忆：记住经历，涉及回忆过去事件或行动，如提示词中给出的 few-shot 样例，帮助Agent 学习正确执行任务</li>
+<li>程序记忆：记住规则，在包含系统提示中， Agent 修改自身提示适应改进<br>
+演示 Agent 如何使用反思来更新存储在 LangGraph BaseStore 中的程序记忆的伪代码</li>
+</ul>
+<pre><code>## 更新 agent 指令的节点
+def update_instructions(state: State, store: BaseStore):
+    namespace = (&quot;instructions&quot;,)
+    # 从存储中获取当前指令
+    current_instructions = store.search(namespace)[0]
+
+    # 创建提示词要求 LLM 反思对话
+    # 并生成新的、改进的指令
+    prompt = prompt_template.format(
+        instructions=current_instructions.value[&quot;instructions&quot;],
+        conversation=state[&quot;messages&quot;]
+    )
+
+    # 从 LLM 获取新指令
+    output = llm.invoke(prompt)
+    new_instructions = output['new_instructions']
+
+    # 将更新的指令保存回存储
+    store.put((&quot;agent_instructions&quot;,), &quot;agent_a&quot;, {&quot;instructions&quot;: new_instructions})
+
+## 使用指令生成响应的节点
+def call_model(state: State, store: BaseStore):
+    namespace = (&quot;agent_instructions&quot;, )
+    # 从存储中检索最新指令
+    instructions = store.get(namespace, key=&quot;agent_a&quot;)[0]
+
+    # 使用检索到的指令格式化提示词
+    prompt = prompt_template.format(instructions=instructions.value[&quot;instructions&quot;])
+    # ... 应用程序逻辑继续
+</code></pre>
+<p>LangGraph 将长期记忆存储为存储中的 JSON文档</p>
+<pre><code>from langgraph.store.memory import InMemoryStore
+
+## 真实嵌入函数的占位符
+def embed(texts: list[str]) -&gt; list[list[float]]:
+    # 在真实应用程序中，使用适当的嵌入模型
+    return [[1.0, 2.0] for _ in texts]
+
+## 初始化内存存储。对于生产，使用数据库支持的存储。
+store = InMemoryStore(index={&quot;embed&quot;: embed, &quot;dims&quot;: 2})
+
+## 为特定用户和应用程序上下文定义命名空间
+user_id = &quot;my-user&quot;
+application_context = &quot;chitchat&quot;
+namespace = (user_id, application_context)
+
+## 1. 将记忆放入存储
+store.put(
+    namespace,
+    &quot;a-memory&quot;,  # 此记忆的键
+    {
+        &quot;rules&quot;: [
+            &quot;用户喜欢简短、直接的语言&quot;,
+            &quot;用户只说英语和 python&quot;,
+        ],
+        &quot;my-key&quot;: &quot;my-value&quot;,
+    },
+)
+
+## 2. 通过其命名空间和键获取记忆
+item = store.get(namespace, &quot;a-memory&quot;)
+print(&quot;检索的项目：&quot;, item)
+
+## 3. 在命名空间内搜索记忆，按内容过滤
+## 并按与查询的向量相似度排序。
+items = store.search(
+    namespace,
+    filter={&quot;my-key&quot;: &quot;my-value&quot;},
+    query=&quot;语言偏好&quot;
+)
+print(&quot;搜索结果：&quot;, items)
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E7%AC%AC-1-%E7%AB%A0%E6%8F%90%E7%A4%BA%E8%AF%8D%E9%93%BE">第 1 章：提示词链</a><br>
+*
+<ul>
+<li><a href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B%E5%92%8C%E6%8F%90%E7%A4%BA%E8%AF%8D%E5%B7%A5%E7%A8%8B">上下文工程和提示词工程</a></li>
+</ul>
+</li>
+<li><a href="#%E7%AC%AC2%E7%AB%A0-%E8%B7%AF%E7%94%B1">第2章： 路由</a></li>
+<li><a href="#%E7%AC%AC3%E7%AB%A0-%E5%B9%B6%E8%A1%8C%E5%8C%96">第3章  并行化</a></li>
+<li><a href="#%E7%AC%AC4%E7%AB%A0-%E5%8F%8D%E6%80%9D">第4章: 反思</a></li>
+<li><a href="#%E7%AC%AC5%E7%AB%A0-%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8">第5章 工具使用</a></li>
+<li><a href="#%E7%AC%AC6%E7%AB%A0-%E8%A7%84%E5%88%92">第6章： 规划</a></li>
+<li><a href="#%E7%AC%AC7%E7%AB%A0%E5%A4%9Aagent-%E5%8D%8F%E4%BD%9C">第7章：多Agent 协作</a></li>
+<li><a href="#%E7%AC%AC8%E7%AB%A0%E8%AE%B0%E5%BF%86%E7%AE%A1%E7%90%86">第8章：记忆管理</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://liyihan5520-wq.github.io/post/agentic-design-patterns/">
+              <h3 class="post-title">
+                Agent 主流设计模式
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://liyihan5520-wq.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

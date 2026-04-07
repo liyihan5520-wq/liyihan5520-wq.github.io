@@ -1,0 +1,224 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Asyncio 异步并发 | YH&#39;s Blog</title>
+<link rel="shortcut icon" href="https://liyihan5520-wq.github.io//favicon.ico?v=1775549127679">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://liyihan5520-wq.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Asyncio 异步并发 | YH&#39;s Blog - Atom Feed" href="https://liyihan5520-wq.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="许多 Agent 项目中均使用了  asyn/awiat 等异步并发，在此系统梳理一下 python asynico 原理和使用方法
+协程:
+又称微线程 Coroutine，一般子程序（函数）都是层级调用，通过栈实现，调用顺序明确。而协程看..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://liyihan5520-wq.github.io/">
+  <img class="avatar" src="https://liyihan5520-wq.github.io//images/avatar.png?v=1775549127679" alt="">
+  </a>
+  <h1 class="site-title">
+    YH&#39;s Blog
+  </h1>
+  <p class="site-description">
+    A junior programmer, focusing on Agent and LLM.     Keep learning and sharing knowledge of  AI
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Asyncio 异步并发
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-12-02
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p><em>许多 Agent 项目中均使用了  asyn/awiat 等异步并发，在此系统梳理一下 python asynico 原理和使用方法</em></p>
+<h2 id="协程">协程:</h2>
+<pre><code>又称微线程 Coroutine，一般子程序（函数）都是层级调用，通过栈实现，调用顺序明确。而协程看上去也是子程序，但在执行过程中，在子程序内部可中断，然后转而执行别的子程序，在适当时再返回接着执行.asyncio 是 python 在语言级实现的 **单进程异步协程框架**，使用 **事件循环(event loop)** 驱动 **协程** 的协作式多任务：
+</code></pre>
+<blockquote>
+<p>一句话概括，让“等IO”的时间片被别的协程拿去干别的活，从而 <em>单线程</em> 也能 <em>高并发</em></p>
+</blockquote>
+<pre><code>def A():
+    print('1')
+    print('2')
+    print('3')
+
+def B():
+    print('x')
+    print('y')
+    print('z')
+</code></pre>
+<p>如果由协程执行，在执行 A 过程中，可以随时中断，去执行 B， B也可能在执行过程中中断再去执行 A，结果可能是:</p>
+<pre><code>        1
+        2
+        x
+        y
+        3
+        z
+</code></pre>
+<p>但是实际上在A 中是没有调用 B 的，所以协程的调用比 函数调用理解起来要难一些。看起来A、B 的执行有点像多线程，但协程特点在于是一个线程执行的</p>
+<ul>
+<li>协程极高的执行效率，由于子程序切换不是线程切换，而是程序自身控制，因此没有线程切换的开销，和多线程相比，线程数量越多，协程优势就越明显</li>
+<li>不需要多线程的锁机制，因为只有一个线程，不存在同时写变量冲突，在协程中控制共享资源不加锁，只需判断状态即可，所以执行效率高很多</li>
+</ul>
+<p>Asyncio 是Python 3.4 引入的标准库，直接内置了对异步 IO 的支持</p>
+<pre><code>async def hello(name):
+    # 打印name和当前线程:
+    print(&quot;Hello %s! (%s)&quot; % (name, threading.current_thread))
+    # 异步调用asyncio.sleep(1):
+    await asyncio.sleep(1)
+    print(&quot;Hello %s again! (%s)&quot; % (name, threading.current_thread))
+    return name
+
+async def main():
+    L = await asyncio.gather(hello(&quot;Bob&quot;), hello(&quot;Alice&quot;))
+    print(L)
+
+asyncio.run(main())
+</code></pre>
+<p>语法糖:</p>
+<ul>
+<li>async 将一个函数变为 coroutinue 类型，然后可以将 async 函数扔到 asyncio.run() 中执行</li>
+<li>await 语法可以让我们在 async 函数中方便地调用另一个 async 函数， 这个调用看起来是 串行执行的，但实际上是由 asyncio 内部消息循环控制</li>
+<li>在一个 async 函数内部，通过 await asyncio.gather() 可并发执行若干个 async 函数</li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%8D%8F%E7%A8%8B">协程:</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://liyihan5520-wq.github.io/post/notes-for-agentic-design-patterns/">
+              <h3 class="post-title">
+                《Agentic Design Patterns》
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://liyihan5520-wq.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
